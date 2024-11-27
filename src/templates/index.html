@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CrypTalk</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Belanosima&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Kanit&family=Lato&family=Montserrat:wght@300&display=swap');
+        * {
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+        }
+        body {
+            background: #222222 !important;
+        }
+        .title {
+            font-size: 100px;
+            text-align: center;
+            margin-top: 300px;
+            margin-bottom: -3px;
+            color: #d0ffab;
+            letter-spacing: 4px;
+            font-weight: 540;
+        }
+        .description {
+            text-align: center;
+            color: #FFFFFF;
+            font-weight: 500;
+            font-size: 24px;
+            word-spacing: 2px;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 26px;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+        }
+        .redirect-button {
+            background-color: #313131;
+            border: none;
+            color: white;
+            text-decoration: none;
+            font-size: 26px;
+            height: 50px;
+            width: 210px;
+            font-weight: 560;
+            transition: background-color 200ms;
+            letter-spacing: 1.5px;
+        }
+        .redirect-button:hover {
+            background-color: #3c3c3c;
+            transition: background-color 200ms;
+        }
+        .redirect-button:active {
+            transform: scale(0.98);
+        }
+        .versiondetails {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 160px;
+            font-size: 17px;
+            font-weight: 500;
+            color: white;
+            opacity: 30%;
+            letter-spacing: 1.5px;
+        }
+    </style>
+</head>
+<body>
+<div class="title">
+    <h1 class="title">
+        CrypTalk
+    </h1>
+</div>
+<div class="description">
+    <h2 class="description">
+        An end-to-end encrypted messaging web-app
+    </h2>
+</div>
+<div class="buttons">
+    <a href="http://localhost:8000/login/"> <!-- redirect link here-->
+    <button class="loginbutton redirect-button">
+        Login
+    </button>
+    </a>
+    <a href="http://localhost:8000/register/"> <!-- and here-->
+    <button class="signup redirect-button">
+        Sign-up
+    </button>
+    </a>
+</div>
+<div class="versiondetails">
+    V0.5.0
+</div>
+</body>
+</html>

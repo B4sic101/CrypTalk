@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login to your account | CrypTalk</title>
+</head>
+<body>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button>Login</button>
+    <div>Don't have an account? <a href="{% url 'register' %}">Sign up</a></div>
+</form>
+</body>
+</html>
