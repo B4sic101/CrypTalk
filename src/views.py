@@ -2,7 +2,7 @@ import re
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
-from src.forms import LoginForm, RegisterForm
+from src.forms import LoginForm, RegisterForm, forgotPassForm
 from src.models import myUser
 
 
@@ -30,4 +30,12 @@ def register(request):
         new_user.save()
         return HttpResponseRedirect("/login/")
     return render(request, 'register.html', {'form': form})
+
+def forgotPassword(request):
+    form = forgotPassForm()
+    if request.method == 'POST':
+        if myUser.objects.filter(email=request.POST['email']).exists():
+            # The email exists, send the reset link and return page to indicate if email exists then sent
+            d = d
+    return render(request, 'forgotPassword.html', {'form': form})
 

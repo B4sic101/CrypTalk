@@ -17,3 +17,9 @@ class LoginForm(forms.ModelForm):
         fields = ['username', 'password']
         widgets = [passwordInputWidget]
 
+class forgotPassForm(forms.ModelForm):
+    class Meta:
+        model = myUser
+        fields = ['email']
+        widgets = [passwordInputWidget]
+
