@@ -9,3 +9,4 @@
 .idea/
 *.sqlite3
 *.iml
+venv/
