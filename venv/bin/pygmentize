@@ -1,4 +1,4 @@
-#!/home/defaultuser/NEA-Project/CrypTalk/venv/bin/python3
+#!/home/defaultuser/NEA-Project/CrypTalk/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

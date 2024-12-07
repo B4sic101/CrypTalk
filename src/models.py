@@ -11,6 +11,5 @@ class myUser(models.Model):
     profileimage = models.ImageField(upload_to="uploads/profiles", default=f'uploads/profiles/{username}.jpeg')
     created_at = models.DateField(default=datetime.date.today)
     notificationSFX = models.BooleanField(default=True)
-
-def __str__(self):
-    return self.userid
+    def __str__(self):
+        return self.userid
