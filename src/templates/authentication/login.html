@@ -5,9 +5,14 @@
     <title>Login to your account | CrypTalk</title>
 </head>
 <body>
-<form method="post">
+<form method="POST" autocomplete="off">
     {% csrf_token %}
-    {{ form.as_p }}
+    <div class="form-group">
+        <input type="text" class="form-control" name="username" aria-describedby="emailHelp" placeholder="Username">
+      </div>
+      <div class="form-group">
+        <input type="password" class="form-control" name="password" aria-describedby="emailHelp" placeholder="Password">
+      </div>
     <button>Login</button>
     <div>Don't have an account? <a href="{% url 'register' %}">Sign up</a></div>
     <div><a href="{%url 'reset_password'%}">Forgot password?</a></div>

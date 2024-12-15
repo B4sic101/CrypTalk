@@ -7,8 +7,8 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("dashboard/", views.dashboard, name="dashboard"),
-    path("login/", views.login, name="login"),
-    path("register/", views.register, name="register"),
+    path("login/", views.loginView, name="login"),
+    path("register/", views.registerView, name="register"),
 
     path("reset_password/", auth_views.PasswordResetView.as_view(), name="reset_password"), # Password reset submition page
 
