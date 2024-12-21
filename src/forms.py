@@ -1,44 +1,47 @@
+from re import search
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from src.models import User
+
 from django import forms
-from django.forms import TextInput, PasswordInput, EmailInput
-from .models import myUser
 
-passwordInputWidget = {
-    'password': forms.PasswordInput()
-}
+from django.forms.widgets import TextInput, PasswordInput, EmailInput
 
-class RegisterForm(forms.ModelForm):
+from src.validators import authenticationValidators as authVal 
+
+
+class registerForm(UserCreationForm):
     class Meta:
-        model = myUser
-        fields = ['username', 'email', 'password']
+        model = User
+        fields = ["username", "email", "password1", "password2"]
         labels = {
             "username": "",
-            "password": "",
+            "password1": "",
+            "password2": "",
             "email": ""
         }
+    
+    def clean(self):
+        cleanedData = self.cleaned_data
+        username = cleanedData.get("username")
+        password1 = cleanedData.get("password1")
+        password2 = cleanedData.get("password2")
 
-        widgets = {"username": TextInput(attrs={"placeholder": "Username", "autocomplete": "off"}),
-                   "password": PasswordInput(attrs={"placeholder": "Password", "autocomplete": "off", "class": "passwordToggle"}),
-                   "email": EmailInput(attrs={"placeholder": "Email", "autocomplete": "off"})}
+        error = authVal.passwordValid(password1)
+
+        if error is not None:
+            self.add_error("password1", error)
+    
+        self.errors.pop("password2", None)
+
+        if password1 and password2 and password1 != password2:
+            self.add_error("password2", "Passwords do not match.")
         
-class LoginForm(forms.ModelForm):
-    class Meta:
-        model = myUser
-        fields = ['username', 'password']
-        widgets = [passwordInputWidget]
-        labels = {
-            "username": "",
-            "password": ""
-        }
-        widgets = {"username": TextInput(attrs={"placeholder": "Username", "autocomplete": "off"}),
-                   "password": PasswordInput(attrs={"placeholder": "Password", "autocomplete": "off", "class": "passwordToggle"})}
+        if search("^\s|\s{2,}|\s$", username):
+            self.add_error("username", "Invalid Username")
 
-class forgotPassForm(forms.ModelForm):
-    class Meta:
-        model = myUser
-        fields = ['email']
-        widgets = [passwordInputWidget]
-        labels = {
-            "email": ""
-        }
-        widgets = {"email": EmailInput(attrs={"placeholder": "Email", "autocomplete": "off"})}
+        return cleanedData
 
+
+class loginForm(AuthenticationForm):
+    username = forms.CharField(widget=TextInput())
+    password = forms.CharField(widget=PasswordInput())
