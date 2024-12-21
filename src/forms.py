@@ -1,9 +1,13 @@
+from re import search
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from src.models import User
 
 from django import forms
 
 from django.forms.widgets import TextInput, PasswordInput, EmailInput
+
+from src.validators import authenticationValidators as authVal 
+
 
 class registerForm(UserCreationForm):
     class Meta:
@@ -15,11 +19,28 @@ class registerForm(UserCreationForm):
             "password2": "",
             "email": ""
         }
+    
+    def clean(self):
+        cleanedData = self.cleaned_data
+        username = cleanedData.get("username")
+        password1 = cleanedData.get("password1")
+        password2 = cleanedData.get("password2")
 
-        widgets = {"username": TextInput(attrs={"placeholder": "Username", "autocomplete": "off"}),
-                   "password1": PasswordInput(attrs={"placeholder": "Password", "class": "passwordToggle"}),
-                   "password2": PasswordInput(attrs={"placeholder": "Confirm Password", "class": "passwordToggle"}),
-                   "email": EmailInput(attrs={"placeholder": "Email", "autocomplete": "off"})}
+        error = authVal.passwordValid(password1)
+
+        if error is not None:
+            self.add_error("password1", error)
+    
+        self.errors.pop("password2", None)
+
+        if password1 and password2 and password1 != password2:
+            self.add_error("password2", "Passwords do not match.")
+        
+        if search("^\s|\s{2,}|\s$", username):
+            self.add_error("username", "Invalid Username")
+
+        return cleanedData
+
 
 class loginForm(AuthenticationForm):
     username = forms.CharField(widget=TextInput())

@@ -3,25 +3,27 @@ from django.core.exceptions import ValidationError
 
 class authenticationValidators:
 
+    def passwordValid(password):
+        if not search(".{8}", password):
 
-    '''
-    if myUser.objects.filter(email=request.POST["email"]).exists():
-        error = "An account with this email already exists.
-    
-    '''
-    '''
-    
-    if re.search("^\s|\s{2,}|\s$", request.POST["username"]):
-    '''
+            return "Password must be at least 8 characters long"
+        
+        if search(".{17,}", password):
 
-    def passwordValid(self, password):
-        if not search("^(?=.*\d)", password):
-            raise ValidationError(
-                "Password must have atleast one digit",
-                code="password_no_digit"
-            )
-        if not search("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>]).{8,}$", password):
-            raise ValidationError(
-                "Password invalid, for valid: 8 characters minimum, one lowercase & uppercase letter, one number, and one special character.",
-                code="password_invalid"
-            )
+            return "Password cannot exceed 16 characters"
+        
+        if not search("[a-z]", password):
+
+            return "Password must have at least one lowercase letter"
+        
+        if not search("[A-Z]", password):
+
+            return "Password must have at least one uppercase letter"
+        
+        if not search("[0-9]", password):
+
+            return "Password must have at least one digit"
+        
+        if not search(".*[\¬\!\"\£\$\%\^\&\*\(\)\_\+\`\-\=\{\}\:\@\~\<\>\?\[\]\;\'\#\,\.\/\\\|]", password):
+
+            return "Password must have at least one special character"

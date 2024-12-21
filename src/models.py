@@ -1,9 +1,8 @@
 import uuid, datetime
 from django.db import models
-from django.core.validators import RegexValidator
-from pygments.lexer import default
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from src.validators import authenticationValidators as authVal
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -16,16 +15,19 @@ class UserManager(BaseUserManager):
         user.save(using=self.db)
         return user
 
+validate_pass = authVal.passwordValid
+
 class User(AbstractBaseUser):
     userID = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False, unique=True)
     username = models.CharField(max_length=20, unique=True)
     email = models.EmailField(max_length=40, unique=True)
-    password = models.CharField(max_length=20)
+    password = models.CharField(max_length=20, validators=[validate_pass])
     profileimage = models.ImageField(upload_to="uploads/profiles")
     created_at = models.DateField(default=datetime.date.today)
     notificationSFX = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    
     objects = UserManager()
 
     USERNAME_FIELD = "username"
@@ -35,13 +37,9 @@ class User(AbstractBaseUser):
         return self.userID
     
     def has_perm(self, perm, obj=None):
-        if self.is_superuser:
-            return True
         return False
     
     def has_module_perms(self, app_label):
-        if self.is_superuser:
-            return True
         return False
     
     @property
