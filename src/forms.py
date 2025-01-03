@@ -21,8 +21,9 @@ class registerForm(UserCreationForm):
         }
     
     def clean(self):
-        cleanedData = self.cleaned_data
+        cleanedData = super().clean()
         username = cleanedData.get("username")
+        email = cleanedData.get("email")
         password1 = cleanedData.get("password1")
         password2 = cleanedData.get("password2")
 
@@ -35,9 +36,18 @@ class registerForm(UserCreationForm):
 
         if password1 and password2 and password1 != password2:
             self.add_error("password2", "Passwords do not match.")
+
+        if username is None:
+            return cleanedData
         
-        if search("^\s|\s{2,}|\s$", username):
+        if User.objects.filter(username=username).exists():
+            self.add_error("username", "Username taken.")
+            
+        if search(r"^\s|\s{2,}|\s$", username):
             self.add_error("username", "Invalid Username")
+
+        if User.objects.filter(email=email).exists():
+            self.add_error("email", "Email already exists.")
 
         return cleanedData
 
@@ -45,3 +55,4 @@ class registerForm(UserCreationForm):
 class loginForm(AuthenticationForm):
     username = forms.CharField(widget=TextInput())
     password = forms.CharField(widget=PasswordInput())
+print("***forms.py loaded***")

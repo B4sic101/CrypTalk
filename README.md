@@ -1,5 +1,6 @@
 # CrypTalk
 ## Usage
+Install python-venv package in Linux and run:
 ```shell
 ./setup.sh
 ```

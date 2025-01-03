@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrypTalk</title>
+    <link rel="icon" href="data:;base64,=">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            border: none;
+            text-decoration: none;
+            box-sizing: border-box;
+            font-family: Inter, 'Courier New', Courier, monospace;
+        }
+
+        body {
+            color: #1A1A1A;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            height: 100vh;
+            width: 24%;
+            background: #3F3F3F;
+            color: #fff;
+        }
+
+        .reflectionProfile {
+            display: flex;
+            padding: 10px;
+            background: #252525;
+        }
+        
+        .profileUsername{
+            margin-left: 1vh;
+            font-size: 2.5vh;
+        }
+
+        .reflectionProfile img{
+            width: 70px;
+            height: 70px;
+            border-radius: 100%;
+        }
+
+        /* Contacts List*/
+
+        .contacts .contactsSection{ /* messages */
+            display: flex;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .contactsList { /* recents */
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            margin-top: 5px;
+        }
+
+        .contactsTitle { /* title */
+
+        }
+
+        .exampleContactImage img{ /* recent-img */
+            width: 60px;
+            height: 60px;
+            border-radius: 100%;
+            margin: 3%;
+        }
+
+        .contactMiniData { /* recent-data */
+            display: flex;
+            flex-direction: column; /* Stack the name and message vertically */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="reflectionProfile">
+                <div class="profileImg">
+                    <img src="{{ profileimage }}">
+                </div>
+                <div class="profileConfigs">
+                    <h3 class="profileUsername">{{username}}</h3>
+                    <form action="{% url 'logout_user' %}" method="get">
+                        <button name="logoutButton">Logout</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="contacts">
+                <div class="contactsSection">
+                    <li class="contact">
+                        <div class="exampleContactImage">
+                            <img src="../../static/dummyUser.png">
+                        </div>
+                        <div class="contactMiniData">
+                            <h3>Mr Plook</h3>
+                            <span class="latestMessage">Mr Plook: How ya doing?</span>
+                        </div>
+                    </li>                    
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+</html>
