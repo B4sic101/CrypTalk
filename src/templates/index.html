@@ -12,9 +12,11 @@
             font-optical-sizing: auto;
             font-style: normal;
         }
+        
         body {
             background: #222222 !important;
         }
+
         .title {
             font-size: 100px;
             text-align: center;
@@ -24,6 +26,7 @@
             letter-spacing: 4px;
             font-weight: 540;
         }
+
         .description {
             text-align: center;
             color: #FFFFFF;
@@ -33,6 +36,7 @@
             letter-spacing: 1px;
             margin-bottom: 40px;
         }
+
         .buttons {
             display: flex;
             flex-direction: column;
@@ -41,6 +45,7 @@
             justify-content: center;
             vertical-align: middle;
         }
+
         .redirect-button {
             background-color: #313131;
             border: none;
@@ -52,14 +57,18 @@
             font-weight: 560;
             transition: background-color 200ms;
             letter-spacing: 1.5px;
+            cursor: pointer;
         }
+
         .redirect-button:hover {
             background-color: #3c3c3c;
             transition: background-color 200ms;
         }
+
         .redirect-button:active {
             transform: scale(0.98);
         }
+
         .versiondetails {
             display: flex;
             align-items: center;
@@ -70,6 +79,13 @@
             color: white;
             opacity: 30%;
             letter-spacing: 1.5px;
+        }
+
+        .notice {
+            display: flex;
+            margin-left: 20vh;
+            top: 20vh;
+            color: #46e19e;
         }
     </style>
 </head>
@@ -85,16 +101,19 @@
     </h2>
 </div>
 <div class="buttons">
-    <a href="http://localhost:8000/login/"> <!-- redirect link here-->
-    <button class="loginbutton redirect-button">
-        Login
-    </button>
-    </a>
-    <a href="http://localhost:8000/register/"> <!-- and here-->
-    <button class="signup redirect-button">
-        Sign-up
-    </button>
-    </a>
+    <form action="{% url 'login' %}" method="get">
+        <button class="loginbutton redirect-button">
+            Login
+        </button>
+    </form>
+    <form action="{% url 'register' %}" method="get">
+        <button class="signup redirect-button">
+            Sign-up
+        </button>
+    </form>
+</div>
+<div class="notice">
+    Notice: Run this app on 100% UI scaling
 </div>
 <div class="versiondetails">
     V0.5.0

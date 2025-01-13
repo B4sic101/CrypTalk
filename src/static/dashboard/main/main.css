@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    border: none;
+    text-decoration: none;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    font-family: Inter, 'Courier New', Courier, monospace;
+}
+
+
+
+.dashboardContainer {
+    display: flex;
+}
+
+.sidebar {
+    height: 100vh;
+    width: 27.5vh;
+    background: #3F3F3F;
+    color: #fff;
+}
+
+.reflectionProfile {
+    display: flex;
+    align-items: center;
+    padding: 1.5vh;
+    background: #252525;
+    overflow: hidden;
+}
+
+.profileUsername{
+    display: flex;
+    bottom: 4.4vh;
+    font-size: 2vh;
+    position: relative;
+    left: 1vh;
+    bottom: .3vh;
+    height: 3vh;
+    white-space: nowrap;
+    flex-grow: 1;
+    min-width: calc(100% - 10vh);
+    scrollbar-width: thin;
+}
+
+.reflectionProfile img{
+    width: 6vh;
+    height: 6vh;
+    flex-shrink: 0;
+    border-radius: 100%;
+}
+
+.profileConfigs {
+    display: flex;
+    flex-direction: row;
+    top: 3vh;
+    right: 4vh;
+    position: relative;
+    gap: .7vh;
+    flex-shrink: 0;
+}
+
+.profileBtn {
+    display: relative;
+    position: relative;
+    height: 3vh;
+    background: none;
+    cursor: pointer;
+    color: white;
+}
+
+/* Contacts List*/
+
+.contacts {
+    width: 27.5vh;
+    height: 100%;
+    overflow: scroll;
+}
+
+.contact {
+    width: 27.5vh;
+    height: 8vh;
+    overflow-x: hidden;
+    cursor: pointer;
+}
+
+.contact img{
+    position: relative;
+    width: 5vh;
+    height: 5vh;
+    top: 1.5vh;
+    left: 1.5vh;
+}
+
+.contactUsername {
+    position: relative;
+    left: 8vh;
+    bottom: 3.8vh;
+    font-size: 1.7vh;
+    width: 19.5vh;
+}
+
+.latestMessage{
+    position: relative;
+    left: 8vh;
+    opacity: 60%;
+    font-size: 1.5vh;
+    bottom: 3.4vh;
+}
+
+.active{
+    background: #000000;
+}
+
+.friendRequest {
+    background: #6c7244;
+}
+.denyBtn {
+    position: relative;
+    left: 10vh;
+    bottom: 3vh;
+    font-size: 1.6vh;
+    background: none;
+    cursor: pointer;
+    color: white;
+}
+
+.acceptBtn {
+    position: relative;
+    left: 8vh;
+    bottom: 3vh;
+    font-size: 1.6vh;
+    background: none;
+    cursor: pointer;
+    color: white;
+}
+
+/* Settings */
+
+.settingsContainer {
+    visibility: hidden;
+}
+
+/* Chat Box */
+
+.msgBox {
+    color: white;
+    width: 85%;
+    background: #1A1A1A;
+}
+
+.msgTopBar {
+    display: flex;
+    padding: 1.105vh 2.211vh;
+    background: #3F3F3F;
+}
+
+.msgTopBar .contact img {
+    width: 7vh;
+    height: 7vh;
+}
+
+.msgTopBar .contact {
+    position: relative;
+    bottom: 0.8vh;
+    height: 8.5vh;
+}
+
+.msgTopBar .contact .contactInfo {
+    position: relative;
+    left: 10vh;
+    bottom: 4.8vh;
+    font-size: 2vh;
+    width: 40vh;
+}
+
+/* Chat Box */
+.chatBox {
+    padding: 0vh 2.211vh;
+    height: 80vh;
+    overflow-x: hidden;
+}
+
+.chatBox .contact {
+    display: flex;
+    margin-top: 2.211vh;
+    cursor: default;
+    width: 50vh;
+    overflow-x: hidden;
+    height: auto;
+}
+
+.chatBox .contactInfo {
+    top: 1vh;
+    left: 2vh;
+    height: 3vh;
+    font-size: 2vh;
+}
+
+.sender {
+    height: auto;
+    width: 80vh;
+}
+
+.sender .contact {
+    height: auto;
+    width: inherit;
+}
+
+.sender .contact .time {
+    display: flex;
+    background-color: transparent;
+    color: white;
+    opacity: 30%;
+    top: 9vh;
+    right: 40vh;
+}
+
+.chatBox .latestMessage {
+    width: inherit;
+    white-space: normal;
+    bottom: 2vh;
+}

@@ -1,11 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import registerForm, loginForm
 from django.contrib.auth import authenticate, login, logout
-from django.core.files.storage import default_storage as defaultStorage
-from io import BytesIO
-from django.core.files.base import ContentFile
-from PIL import Image
-from src.models import User
 
 def index(request):
     if request.user.is_authenticated:
@@ -56,7 +51,7 @@ def registerView(request):
             form = registerForm(request.POST)
 
             if form.is_valid():
-                instance = form.save()
+                form.save()
 
                 return redirect("login")
 
@@ -64,5 +59,9 @@ def registerView(request):
         return render(request, 'authentication/register.html', context)
 
 def logout_user(request):
-    logout(request)
+    if request.user.is_authenticated:
+        logout(request)
     return redirect("index")
+
+def test(request):
+    print("*** GOT THE CALL ***")

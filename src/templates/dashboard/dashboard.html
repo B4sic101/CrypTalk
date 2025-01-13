@@ -5,114 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrypTalk</title>
     <link rel="icon" href="data:;base64,=">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            border: none;
-            text-decoration: none;
-            box-sizing: border-box;
-            font-family: Inter, 'Courier New', Courier, monospace;
-        }
-
-        body {
-            color: #1A1A1A;
-        }
-
-        .container {
-            display: flex;
-        }
-
-        .sidebar {
-            height: 100vh;
-            width: 24%;
-            background: #3F3F3F;
-            color: #fff;
-        }
-
-        .reflectionProfile {
-            display: flex;
-            padding: 10px;
-            background: #252525;
-        }
-        
-        .profileUsername{
-            margin-left: 1vh;
-            font-size: 2.5vh;
-        }
-
-        .reflectionProfile img{
-            width: 70px;
-            height: 70px;
-            border-radius: 100%;
-        }
-
-        /* Contacts List*/
-
-        .contacts .contactsSection{ /* messages */
-            display: flex;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .contactsList { /* recents */
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            margin-top: 5px;
-        }
-
-        .contactsTitle { /* title */
-
-        }
-
-        .exampleContactImage img{ /* recent-img */
-            width: 60px;
-            height: 60px;
-            border-radius: 100%;
-            margin: 3%;
-        }
-
-        .contactMiniData { /* recent-data */
-            display: flex;
-            flex-direction: column; /* Stack the name and message vertically */
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'dashboard/main/main.css' %}">
+    <script src="{% static 'dashboard/main/main.js' %}"></script>
+    <script src="https://kit.fontawesome.com/c970b059ac.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
-    <div class="dashboard-container">
+    <!-- SIDEBAR -->
+    <div class="dashboardContainer">
         <div class="sidebar">
             <div class="reflectionProfile">
-                <div class="profileImg">
-                    <img src="{{ profileimage }}">
-                </div>
+                <img src="{{ profileimage }}">
+                <h3 class="profileUsername">{{ username }}</h3>
                 <div class="profileConfigs">
-                    <h3 class="profileUsername">{{username}}</h3>
                     <form action="{% url 'logout_user' %}" method="get">
-                        <button name="logoutButton">Logout</button>
+                        <button class="profileBtn logoutBtn fa-solid fa-right-from-bracket fa-lg"></button>
+                    </form>
+                    <form action="" method="get">
+                        <button onclick="displaySettings" class="profileBtn settingsBtn fa-solid fa-gear fa-lg"></button>
+                    </form>
+                    <form action="" method="get">
+                        <button class="profileBtn friendBtn fa-solid fa-user-group fa-lg"></button>
                     </form>
                 </div>
             </div>
 
+
+            <!-- CONTACT LIST -->
             <div class="contacts">
-                <div class="contactsSection">
-                    <li class="contact">
-                        <div class="exampleContactImage">
-                            <img src="../../static/dummyUser.png">
-                        </div>
-                        <div class="contactMiniData">
-                            <h3>Mr Plook</h3>
-                            <span class="latestMessage">Mr Plook: How ya doing?</span>
-                        </div>
-                    </li>                    
+
+                <div class="contact">
+                    <img src="../../static/dummyUser.png">
+                    <div class="contactUsername">Mr Plook</div>
+                    <div class="latestMessage">Package here yet?</div>
+                </div>
+
+                <div class="contact active">
+                    <img src="../../static/dummyUser.png">
+                    <div class="contactUsername">Luke Mandore</div>
+                    <div class="latestMessage">Hi there.</div>
+                </div>
+            
+                <div class="contact friendRequest">
+                    <img src="../../static/dummyUser.png">
+                    <div class="contactUsername">Chris Nolan</div>
+                    <button class="acceptBtn">✅ Accept</button>
+                    <button class="denyBtn">❌ Deny</button>
+                </div>
+            </div>
+        </div>
+        <!-- Message Box -->
+        <div class="msgBox">
+            <div class="msgTopBar">
+                <div class="contact">
+                    <img src="../../static/dummyUser.png">
+                    <div class="contactUsername contactInfo">Mr Plook</div>
+                    <div class="latestMessage contactInfo">Package here yet?</div>
                 </div>
             </div>
 
-
+            <!-- Chat Box -->
+            <div class="chatBox">
+                <div class="sender">
+                    <div class="contact">
+                        <div class="latestMessage contactInfo">Package here yet?</div>
+                        <div class="time contactInfo">10:02 AM</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- SETTINGS -->
+    <div class="settingsContainer">
+        <div class="settingsTopBar">
+            <div class="settingsTitle">Settings</div>
+            <button onclick="displaySettings" class="exitButton fa-solid fa-x fa-2xl"></button>
+        </div>
+        <div class="configurations">
+            <div class="configItem notiSFX">
+                <div class="config notiSFXInfo">
+                    NotificationSFX
+                    <div>
+                        Sound effect for new messages.
+                    </div>
+                </div>
+                <button class="toggle" on></button>
+            </div>
+            <div class="configItem">
+                <div class="config textInput">
+                    Username:
+                    <input type="text" name="usernameInput" class="inputBox" value="{{ username }}">
+                </div>
+                <div class="config textInput">
+                    Password:
+                    <input type="text" name="passwordInput" class="inputBox">
+                </div>
+                <div class="config textInput">
+                    Re-enter Password:
+                    <input type="text" name="passwordInput" class="inputBox">
+                </div>
+                <div class="config uploadFile">
+                    Profile Image:
+                    <button class="uploadBtn"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
