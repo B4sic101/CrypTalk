@@ -13,16 +13,21 @@ def addContact(request):
     if serializer.is_valid():
         
         validSer = serializer.validated_data
-        if User.objects.filter(username=validSer['receiver']).exists():
-            if validSer['receiver'] != request.user.username:
+        if User.objects.filter(userID=validSer['receiver']).exists():
+            if User.objects.filter(userID=validSer['sender']).exists():
+                if validSer['receiver'] != request.user.userID:
 
-                if not friendRequest.objects.filter(receiver=validSer['receiver']).exists():
-                    newFR = friendRequest.objects.create(receiver=validSer['receiver'], sender=request.user.username)
+                    if not friendRequest.objects.filter(receiver=validSer['receiver']).exists():
+                        newFR = friendRequest.objects.create(receiver=validSer['receiver'], sender=request.user.userID)
 
-                    newFR.save()
-                    return Response("Friend request sent. Congrats!", status=201)
+                        newFR.save()
+                        return Response("Friend request sent!", status=201)
+                else:
+                    return Response(defaultErrorMsg, status=400)
             else:
-                return Response(defaultErrorMsg, status=400)
+                return Response("Friend request already active.", status=300)
+        else:
+            return Response("This person has already sent you a request.", 200)
 
     return Response(defaultErrorMsg, status=400)
 
