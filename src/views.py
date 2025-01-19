@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .forms import registerForm, loginForm
 from django.contrib.auth import authenticate, login, logout
+from rest_framework import permissions, viewsets
+from src.serializers import addContact
 
 def index(request):
     if request.user.is_authenticated:
@@ -62,6 +64,3 @@ def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect("index")
-
-def test(request):
-    print("*** GOT THE CALL ***")
