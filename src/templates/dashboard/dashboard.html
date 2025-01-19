@@ -7,6 +7,7 @@
     <link rel="icon" href="data:;base64,=">
     {% load static %}
     <link rel="stylesheet" href="{% static 'dashboard/main/main.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="{% static 'dashboard/main/main.js' %}"></script>
     <script src="https://kit.fontawesome.com/c970b059ac.js" crossorigin="anonymous"></script>
 </head>
@@ -22,12 +23,8 @@
                     <form action="{% url 'logout_user' %}" method="get">
                         <button class="profileBtn logoutBtn fa-solid fa-right-from-bracket fa-lg"></button>
                     </form>
-                    <form action="" method="get">
-                        <button onclick="displaySettings" class="profileBtn settingsBtn fa-solid fa-gear fa-lg"></button>
-                    </form>
-                    <form action="" method="get">
-                        <button class="profileBtn friendBtn fa-solid fa-user-group fa-lg"></button>
-                    </form>
+                    <button onclick="" class="profileBtn settingsBtn fa-solid fa-gear fa-lg"></button>
+                    <button onclick="" class="profileBtn friendBtn fa-solid fa-user-group fa-lg"></button>
                 </div>
             </div>
 
@@ -55,24 +52,49 @@
                 </div>
             </div>
         </div>
+
+        <div class="addContactPopUp">
+            <button class="exitBtn fa-solid fa-x fa-xl"></button>
+            <div class="container">
+                <div class="title">Add Contact</div>
+                <div class="description">Enter the username of the person you want to add:</div>
+                <input type="text" class="input" placeholder="Username">
+                <div class="msg">That username doesn't exist, try again.</div>
+                <button class="submitBtn">Submit</button>
+            </div>
+        </div>
+
         <!-- Message Box -->
         <div class="msgBox">
             <div class="msgTopBar">
                 <div class="contact">
                     <img src="../../static/dummyUser.png">
                     <div class="contactUsername contactInfo">Mr Plook</div>
-                    <div class="latestMessage contactInfo">Package here yet?</div>
+                    <div class="contactStatus contactInfo">Online</div>
+                </div>
+                <div class="appInfo">
+                    <div class="appInfo fa-solid fa-lock"></div>
+                    <div class="appInfo appVersion">V0.5.0 BETA</div>
+                    <div class="appInfo encryptionInfo">AES-256 Encryption</div>
                 </div>
             </div>
 
             <!-- Chat Box -->
             <div class="chatBox">
-                <div class="sender">
+                <div class="sender messageBlock">
                     <div class="contact">
-                        <div class="latestMessage contactInfo">Package here yet?</div>
-                        <div class="time contactInfo">10:02 AM</div>
+                        <div class="message contactInfo">Its all working great now.<div class="time contactInfo">10:02 AM</div></div>
                     </div>
                 </div>
+                <div class="receiver messageBlock">
+                    <div class="contact">
+                        <div class="message contactInfo"> No problem!<div class="time contactInfo">3:02 AM</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="typeBox">
+                <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
+                <button></button>
             </div>
         </div>
     </div>

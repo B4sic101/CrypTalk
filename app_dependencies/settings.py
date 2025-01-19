@@ -74,6 +74,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app_dependencies.wsgi.application'
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = (3600 * 24) * 30
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

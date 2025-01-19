@@ -1,13 +1,9 @@
 from re import search
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from src.models import User
-
 from django import forms
-
 from django.forms.widgets import TextInput, PasswordInput, EmailInput
-
 from src.validators import authenticationValidators as authVal 
-
 
 class registerForm(UserCreationForm):
     class Meta:
@@ -55,4 +51,5 @@ class registerForm(UserCreationForm):
 class loginForm(AuthenticationForm):
     username = forms.CharField(widget=TextInput())
     password = forms.CharField(widget=PasswordInput())
+
 print("***forms.py loaded***")

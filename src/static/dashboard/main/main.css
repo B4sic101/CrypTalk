@@ -10,13 +10,12 @@
     font-family: Inter, 'Courier New', Courier, monospace;
 }
 
-
-
 .dashboardContainer {
     display: flex;
 }
 
 .sidebar {
+    overflow: hidden;
     height: 100vh;
     width: 27.5vh;
     background: #3F3F3F;
@@ -27,13 +26,13 @@
     display: flex;
     align-items: center;
     padding: 1.5vh;
+    padding-bottom: 3.2vh;
     background: #252525;
     overflow: hidden;
 }
 
 .profileUsername{
     display: flex;
-    bottom: 4.4vh;
     font-size: 2vh;
     position: relative;
     left: 1vh;
@@ -55,17 +54,17 @@
 .profileConfigs {
     display: flex;
     flex-direction: row;
-    top: 3vh;
-    right: 4vh;
+    top: 4vh;
+    right: 4.8vh;
     position: relative;
-    gap: .7vh;
+    gap: 1vh;
     flex-shrink: 0;
 }
 
 .profileBtn {
     display: relative;
     position: relative;
-    height: 3vh;
+    height: 4vh;
     background: none;
     cursor: pointer;
     color: white;
@@ -102,7 +101,7 @@
     width: 19.5vh;
 }
 
-.latestMessage{
+.contacts .latestMessage{
     position: relative;
     left: 8vh;
     opacity: 60%;
@@ -119,7 +118,7 @@
 }
 .denyBtn {
     position: relative;
-    left: 10vh;
+    left: 8vh;
     bottom: 3vh;
     font-size: 1.6vh;
     background: none;
@@ -147,7 +146,7 @@
 
 .msgBox {
     color: white;
-    width: 85%;
+    width: 100%;
     background: #1A1A1A;
 }
 
@@ -166,60 +165,216 @@
     position: relative;
     bottom: 0.8vh;
     height: 8.5vh;
+    cursor: default;
 }
 
 .msgTopBar .contact .contactInfo {
     position: relative;
     left: 10vh;
-    bottom: 4.8vh;
+    bottom: 5vh;
     font-size: 2vh;
     width: 40vh;
 }
 
+.msgTopBar .contact .contactStatus {
+    font-size: 1.7vh;
+    opacity: 50%;
+    margin-top: .5vh;
+}
+
+.msgTopBar .appInfo {
+    position: relative;
+    left: 22%;
+    top: 70%;
+    width: 36vh;
+    font-size: 1.5vh;
+    letter-spacing: .2vh;
+    opacity: 50%;
+    overflow: hidden;
+}
+.msgTopBar .encryptionInfo {
+    left: 28%;
+    top: 26%;
+    font-size: 1.7vh;
+}
+
+.msgTopBar .appVersion {
+    top: -20%;
+    left: 36%;
+}
 /* Chat Box */
+
 .chatBox {
     padding: 0vh 2.211vh;
     height: 80vh;
     overflow-x: hidden;
+    overflow-y: scroll;
 }
 
-.chatBox .contact {
+.addContactPopUp {
+    position: absolute;
+    padding: 2vh;
+    z-index: 3;
+    color: #d4d4d4;
+    bottom: 42%;
+    left: 37%;
+    background: #343434;
+    display: none;
+}
+
+.addContactPopUp .container {
     display: flex;
-    margin-top: 2.211vh;
-    cursor: default;
-    width: 50vh;
-    overflow-x: hidden;
-    height: auto;
+    align-items: center;
+    flex-direction: column;
+    padding-left: 3vh;
+    padding-bottom: .5vh;
+    padding-right: 0vh;
 }
 
-.chatBox .contactInfo {
-    top: 1vh;
-    left: 2vh;
-    height: 3vh;
+.addContactPopUp .exitBtn {
+    display: absolute;
+    cursor: pointer;
+    width: 2.7vh;
+    height: 2.7vh;
+    background: none;
+    color: #d4d4d4;
+    left: 10vh;
+}
+
+.addContactPopUp .input {
+    background: #181818;
+    color: white;
+    width: 47vh;
+    padding: 1vh;
+    margin-bottom: 1vh;
+    font-size: 2vh;
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    resize: none;
+}
+
+.addContactPopUp .msg {
+    color: rgb(205, 50, 50);
+    margin-bottom: 1vh;
+    display: none;
+}
+
+.addContactPopUp .title {
+    font-size: 4vh;
+    left: 3vh;
+    font-style: bold;
+}
+
+.addContactPopUp .exitBtn{
+    display: relative;
+    float: right;
+}
+
+.addContactPopUp .exitBtn:active {
+    transform: scale(0.90);
+}
+
+.addContactPopUp .description {
+    margin: 1vh;
     font-size: 2vh;
 }
 
-.sender {
-    height: auto;
-    width: 80vh;
+.addContactPopUp .submitBtn {
+    background: #000000;
+    color: #d4d4d4;
+    padding: 1vh;
+    font-size: 2vh;
+    cursor: pointer;
+    
 }
 
-.sender .contact {
-    height: auto;
-    width: inherit;
+.addContactPopUp .submitBtn:hover {
+    background-color: #161616;
+    transition: background-color 200ms;
 }
 
-.sender .contact .time {
+.addContactPopUp .submitBtn:active {
+    transform: scale(0.98);
+}
+
+.messageBlock {
     display: flex;
-    background-color: transparent;
-    color: white;
-    opacity: 30%;
-    top: 9vh;
-    right: 40vh;
+    flex-direction: column;
+    max-width: 50%;
+    margin-right: 50%;
+    height: auto;
+    overflow: visible;
+    width: fit-content;
 }
 
-.chatBox .latestMessage {
-    width: inherit;
-    white-space: normal;
-    bottom: 2vh;
+.messageBlock .contact {
+    display: relative;
+    max-width: 100%;
+    width: fit-content;
+    margin-top: 1vh;
+    height: max-content;
+    cursor: default;
+}
+
+.messageBlock .contact .message {
+    font-size: 2vh;
+    background: #4D4D4D;
+    color: white;
+    padding: 1.2vh;
+    padding-top: .8vh;
+    padding-bottom: 0vh;
+    height: auto;
+    max-width: 100%;
+    word-wrap: break-word;
+    white-space: pre-wrap; 
+    border-radius: 6px 6px 6px 0px; 
+    overflow-x: none;
+}
+
+.messageBlock .contact .time {
+    margin-top: 1vh; 
+    float: right;
+    margin-left: 1vh;
+    margin-bottom: 1vh;
+    font-size: 1.5vh;
+    color: #999;
+}
+
+.receiver {
+    margin-right: 0%;
+    float: right;
+}
+
+.receiver .contact .message {
+    border-radius: 6px 6px 0px 6px;
+    background: #005593;
+    overflow-x: hidden;
+}
+
+.typeBox {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    height: 9.4vh;
+    background: #313131;
+}
+
+.typeBox .entryField {
+    align-items: center;
+    position: relative;
+    margin: auto;
+    width: 90%;
+    height: 60%;
+    overflow-y: auto;
+    border: none;
+    overflow: auto;
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    resize: none;
+    background: #313131;
+    color: white;
 }
