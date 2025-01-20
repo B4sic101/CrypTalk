@@ -62,6 +62,15 @@ function addContact(){
         debug = true;
         const userToAdd = document.querySelector(".addContactPopUp .container .input");
         const msg = document.querySelector(".addContactPopUp .container .msg");
+        
+        const data = {"receiver":toString(userToAdd.value)}
+        fetch("/api/add-contact", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
 
         console.log(`We are going to add ${userToAdd.value}`);
 
