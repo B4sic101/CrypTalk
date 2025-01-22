@@ -4,6 +4,7 @@ sudo apt-get install python3-dev default-libmysqlclient-dev build-essential pkg-
 python3 -m venv venv
 source venv/bin/activate
 ./venv/bin/pip install Django djangorestframework Pillow
+./venv/bin/pip -m pip install -U 'channels[daphne]'
 ./venv/bin/pip install mysql-server PyMySQL
 sudo systemctl start mysql
 sudo mysql -p -e "create database newdb;" 

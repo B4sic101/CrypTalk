@@ -48,35 +48,72 @@ function ACkeyPressed(event){
 
 function toggleAddContact(){
     const popup = document.querySelector(".addContactPopUp")
+    const msg = document.querySelector(".addContactPopUp .container .msg");
     if (popup.style.display == "block"){
         popup.style.display = "none";
+        msg.style.display = "none";
+        msg.innerText = "";
     }
     else{
         popup.style.display = "block";    
     }
 }
 
-debug = false
+let debug = false
 function addContact(){
     if (!debug){
-        debug = true;
         const userToAdd = document.querySelector(".addContactPopUp .container .input");
-        const msg = document.querySelector(".addContactPopUp .container .msg");
-        
-        const data = {"receiver":toString(userToAdd.value)}
-        fetch("/api/add-contact", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
+        if (userToAdd != ""){
+            debug = true;
+            const msg = document.querySelector(".addContactPopUp .container .msg");
+            let userid;
+            let csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+            let statusCode = 0;
+            fetch(`/api/get-userid?username=${userToAdd.value}`)
+                .then(data => {return data.json();})
+                .then(post => {
+                    userid = post.userID;
+                    fetch("/api/add-contact", {
+                        method: "POST",
+                        headers: {'Content-Type':'application/json', 'X-CSRFToken':csrftoken},
+                        body: JSON.stringify({receiver:userid})
+                    })
+                        .then(data => {
+                            statusCode = data.status;
+                            return data.json();
+                        })
+                        .then(response =>{
+                            msg.style.display = "block";
+                            let foundResponse = false;
+                            let infoMsg = response.msg
+                            let reqID = response.requestID
 
-        console.log(`We are going to add ${userToAdd.value}`);
+                            
+                            if (statusCode === 404 || statusCode === 400){
+                                msg.innerText = infoMsg;
+                                msg.style.color = "rgb(205, 50, 50)";
+                                foundResponse = true;
+                            } else if (statusCode === 201 && !foundResponse) {
+                                msg.style.color = "rgb(68, 205, 50)";
+                                msg.innerText = infoMsg;
+                                foundResponse = true;
+                            } else if (!foundResponse) {
+                                msg.innerText = "Something went wrong.";
+                                msg.style.color = "rgb(205, 50, 50)";
 
-        userToAdd.value = "";
-        debug = false;
-    }
+                            const FRsocket = new WebSocket(`ws://${window.location.host}/ws/friendrequest/${reqID}`);
+
+                            FRsocket.onopen = function() {
+                                console.log('Websocket connection established.');
+                            }
+                            };
+                        });
+                });
+             
+            userToAdd.value = "";
+            debug = false;
+        };
+    };
 }
 
 function sendMessage(){

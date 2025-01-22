@@ -10,8 +10,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="{% static 'dashboard/main/main.js' %}"></script>
     <script src="https://kit.fontawesome.com/c970b059ac.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
 </head>
 <body>
+    {% csrf_token %}
 
     <!-- SIDEBAR -->
     <div class="dashboardContainer">
@@ -59,7 +61,7 @@
                 <div class="title">Add Contact</div>
                 <div class="description">Enter the username of the person you want to add:</div>
                 <input type="text" class="input" placeholder="Username">
-                <div class="msg">That username doesn't exist, try again.</div>
+                <div class="msg"></div>
                 <button class="submitBtn">Submit</button>
             </div>
         </div>
@@ -92,10 +94,10 @@
                     </div>
                 </div>
             </div>
-            <div class="typeBox">
+            <form type="{POST}" class="typeBox">
                 <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
                 <button></button>
-            </div>
+            </form>
         </div>
     </div>
 

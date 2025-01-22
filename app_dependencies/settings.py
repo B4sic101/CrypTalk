@@ -34,6 +34,8 @@ MEDIA_ROOT = join(BASE_DIR, 'uploads')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -73,7 +75,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'app_dependencies.wsgi.application'
+# WSGI_APPLICATION = 'app_dependencies.wsgi.application'
+
+ASGI_APPLICATION = 'app_dependencies.asgi.application'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = (3600 * 24) * 30
@@ -92,10 +96,15 @@ DATABASES = {
         'PORT':'3306',
         'OPTIONS': {
             'sql_mode':'traditional'
-        },
+        }
     }
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
