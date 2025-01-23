@@ -34,17 +34,17 @@ MEDIA_ROOT = join(BASE_DIR, 'uploads')
 # Application definition
 
 INSTALLED_APPS = [
+    'api',
+    'src',
     'daphne',
     'channels',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
-    'src',
-    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +74,12 @@ TEMPLATES = [
         },
     },
 ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # WSGI_APPLICATION = 'app_dependencies.wsgi.application'
 

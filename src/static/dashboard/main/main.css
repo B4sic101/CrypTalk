@@ -116,6 +116,20 @@
 .friendRequest {
     background: #6c7244;
 }
+
+.friendRequest .friendRequestID{
+    display: none;
+}
+
+.friendRequest img{
+    display: relative;
+    width: 5vh;
+    height: 5vh;
+    top: 1.5vh;
+    left: 1.5vh;
+    border-radius: 100%;
+}
+
 .denyBtn {
     position: relative;
     left: 8vh;
