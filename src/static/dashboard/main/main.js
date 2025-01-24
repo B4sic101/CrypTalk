@@ -1,3 +1,5 @@
+const frSocket = new WebSocket(`ws://${window.location.host}/ws/notifyFR/`);
+
 window.addEventListener("load", () => {
     const chats = document.querySelectorAll(".chatBox");
     const msgTextBox = document.querySelector(".entryField");
@@ -101,10 +103,9 @@ function addContact(){
                                 msg.innerText = "Something went wrong.";
                                 msg.style.color = "rgb(205, 50, 50)";
 
-                            const FRsocket = new WebSocket(`ws://${window.location.host}/ws/friendrequest/${reqID}`);
 
-                            FRsocket.onopen = function() {
-                                console.log('Websocket connection established.');
+                            frSocket.onopen = (Event) => {
+                                frSocket.send({'requestID':reqID})
                             }
                             };
                         });
