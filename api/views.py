@@ -13,6 +13,7 @@ def addContact(request):
     serializer = FRSerializer(data=request.data)
     defaultErrorMsg = {'msg':'Something went wrong.', 'requestID':f'{None}'}
     #referer = request.META.get('HTTP_REFERER')
+    print("Hello " + str(request.data))
     if request.data != {}:
 
         if serializer.is_valid():
@@ -23,10 +24,10 @@ def addContact(request):
 
                 if not friendRequest.objects.filter(receiver=validSer['receiver'], sender=request.user.userID).exists():
                     if not friendRequest.objects.filter(receiver=request.user.userID, sender=validSer['receiver']).exists():
+                        print("fr made")
                         newFR = friendRequest.objects.create(receiver=validSer['receiver'], sender=request.user.userID)
 
                         newFR.save()
-                        sendFrNoti(request, newFR)
 
                         return Response({'msg':'Friend request sent.', 'requestID':f'{newFR.requestID}'}, status=201)
                     else:
@@ -55,18 +56,3 @@ def getUserID(request):
         else:
             return Response('')
     return Response("Invalid data")
-
-def sendFrNoti(request, createdfr):
-    reqID = createdfr.requestID
-    receiverID = createdfr.receiver
-    receiverUsername = User.objects.filter(userID=receiverID).values("username")[0]["username"]
-    # CONTINUE HERE
-
-
-    '''grp = f'noti_{receiverID}'
-    channel_layer = get_channel_layer
-
-    async_to_sync(channel_layer.group_send)(
-        ''
-    )'''
-    

@@ -84,11 +84,12 @@ function addContact(){
                             statusCode = data.status;
                             return data.json();
                         })
-                        .then(response =>{
+                        .then(response => {
                             msg.style.display = "block";
                             let foundResponse = false;
                             let infoMsg = response.msg
                             let reqID = response.requestID
+                            console.log("Check 1")
 
                             
                             if (statusCode === 404 || statusCode === 400){
@@ -99,15 +100,17 @@ function addContact(){
                                 msg.style.color = "rgb(68, 205, 50)";
                                 msg.innerText = infoMsg;
                                 foundResponse = true;
+                                console.log("Check 2")
+                                frSocket.onopen = (event) => {
+                                    console.log("Check 3")
+                                    frSocket.send({'requestID': reqID});
+                                    console.log("Websocket Message sent")
+                                };
                             } else if (!foundResponse) {
                                 msg.innerText = "Something went wrong.";
                                 msg.style.color = "rgb(205, 50, 50)";
-
-
-                            frSocket.onopen = (Event) => {
-                                frSocket.send({'requestID':reqID})
-                            }
                             };
+                            console.log("Check 4")
                         });
                 });
              

@@ -23,26 +23,35 @@ class FRConsumer(WebsocketConsumer):
     def receive(self, data):
         jData = loads(data)
         reqID = jData["requestID"]
-        receiverUserID = friendRequest.objects.filter(requestID=reqID).values("receiver")[0]
-        senderUserID = friendRequest.objects.filter(requestID=reqID).values("sender")[0]
-        sender = User.objects.filter(username=senderUserID).values("username")[0]
+        receiverUserID = friendRequest.objects.filter(requestID=reqID).values("receiver")[0]["receiver"]
+        senderUserID = friendRequest.objects.filter(requestID=reqID).values("sender")[0]["sender"]
+        sender = User.objects.filter(username=senderUserID).values("username")[0]["username"]
         targetGrp = f'noti_{receiverUserID}'
+        receiver = User.objects.filter(userID=receiverUserID).values("username")[0]["username"]
+
+        # Truth table variables
+        print(f"""------------- TRUTH TABLE -------------
+                        Target Group: {targetGrp}
+                        Receiver: {receiver}
+                        Sender: {sender}
+              ---------------- Outputs ---------------""")
 
         try:
             async_to_sync(
                 self.channel_layer.group_send(
                 targetGrp,
                 {
-                    'type': 'notifyFR',
+                    'type': 'frNotifier',
                     'requestID': reqID,
                     'sender': sender
                 }
                 )
             )
+            print("Sent message to group")
         except Exception:
             print("User not online")
 
-    def notifyUser(self, textData):
+    def frNotifier(self, textData):
         reqID = textData['requestID']
         sender = textData['sender']
 
@@ -50,3 +59,5 @@ class FRConsumer(WebsocketConsumer):
             'requestID':reqID,
             'senderUsername': sender
         })))
+
+

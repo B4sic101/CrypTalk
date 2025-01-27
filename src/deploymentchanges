@@ -1,0 +1,2 @@
+channel layer default to redis
+Websocket url 'ws' to 'wss' ONLY HTTPS
