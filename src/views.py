@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import registerForm, loginForm
 from django.contrib.auth import authenticate, login, logout
-from rest_framework import permissions, viewsets
 from api.models import friendRequest 
 from src.models import User
 from django.core import serializers
@@ -14,19 +13,25 @@ def index(request):
 
 def dashboard(request):
     if request.user.is_authenticated:
-        userFRs = friendRequest.objects.filter(receiver=request.user.userID).values()
-        for fRequest in userFRs:
-            fRequest['senderUsername'] = str(User.objects.filter(userID=fRequest["sender"])[0])
-            fRequest['senderProfile'] = f'/uploads/profiles/user_{userFRs[0]["sender"]}.jpeg'
+        userFRs = friendRequest.objects.filter(receiver=request.user.userID)
+        updatedUserFRs = userFRs.values()
+
+        for fRequest in updatedUserFRs:
+            senderID = fRequest["sender"]
+            
+            userQuery = User.objects.filter(userID=senderID).values("username")
+            fRequest['senderUsername'] = userQuery[0]["username"]
+
+            fRequest['senderProfile'] = f'/uploads/profiles/user_{senderID}.jpeg'
         
-        context = {
+        userData = {
                 "username" : request.user.username,
                 "userID" : request.user.userID,
                 "profileimage" : f"/uploads/profiles/user_{request.user.userID}.jpeg",
-                "friendRequests" : userFRs,
-            }
+                "friendRequests" : updatedUserFRs,
+        }
 
-        return render(request, "dashboard/dashboard.html", context=context)
+        return render(request, "dashboard/dashboard.html", context=userData)
     else:
         return redirect("index")
 

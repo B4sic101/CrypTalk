@@ -2,5 +2,5 @@ from django.urls import path
 from src.consumers import FRConsumer
 
 websocket_urlpatterns = {
-    path(r'ws/notifyFR/$', FRConsumer.as_asgi()),
+    path('ws/notifyFR/', FRConsumer.as_asgi()),
 }

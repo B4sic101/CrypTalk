@@ -31,6 +31,7 @@
 
 
             <!-- CONTACT LIST -->
+
             <div class="contacts">
                 <div class="contact">
                     <img src="../../static/dummyUser.png">
@@ -43,7 +44,17 @@
                     <div class="contactUsername">Luke Mandore</div>
                     <div class="latestMessage">Hi there.</div>
                 </div>
-            
+                
+                <template class="FRTemplate">
+                    <div class="contact friendRequest">
+                        <img src="{{ req.senderProfile }}">
+                        <div class="contactUsername"></div>
+                        <div class="friendRequestID"></div>
+                        <button class="acceptBtn">✅ Accept</button>
+                        <button class="denyBtn">❌ Deny</button>
+                    </div>
+                </template>
+
                 {% for req in friendRequests %}
                     <div class="contact friendRequest">
                         <img src="{{ req.senderProfile }}">

@@ -117,6 +117,23 @@ function addContact(){
     };
 }
 
+frSocket.onmessage = function(event) {
+    const reqID =  event.requestID;
+    const senderUsername = event.senderUsername;
+    addFR(reqID, senderUsername);
+}
+
+function addFR(request, username){
+    const contactList = document.querySelector(".contacts");
+    const template = document.querySelector(".FRTemplate");
+
+    const FRDiv = template.cloneNode(true);
+    const requestBody = FRDiv.querySelector(".friendRequest");
+    // Make an API to fetch necessary FRDetails
+
+    newFRDiv.appendChild(contactList);
+}
+
 function sendMessage(){
     // Send message here
 };

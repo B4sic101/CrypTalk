@@ -12,7 +12,7 @@ class FRConsumer(WebsocketConsumer):
         else:
             # Accept the connection
             user = self.scope['user']
-            self.grp = f'noti_{user.username}'
+            self.grp = f'noti_{user.userID}'
 
             async_to_sync(self.channel_layer.group_add(self.grp, self.channel_name))
             self.accept()
@@ -28,25 +28,25 @@ class FRConsumer(WebsocketConsumer):
         sender = User.objects.filter(username=senderUserID).values("username")[0]
         targetGrp = f'noti_{receiverUserID}'
 
-        if targetGrp:
+        try:
             async_to_sync(
                 self.channel_layer.group_send(
                 targetGrp,
                 {
-                    'type': 'notify_fr',
+                    'type': 'notifyFR',
                     'requestID': reqID,
                     'sender': sender
                 }
+                )
             )
-            )
+        except Exception:
+            print("User not online")
 
-    def notify_fr(self, event):
-        #Handle notification event sent to user
-        friendRequestID = event['requestID']
-        sender = event['sender']
+    def notifyUser(self, textData):
+        reqID = textData['requestID']
+        sender = textData['sender']
 
-        #send message to websocket client
-        self.send(textData=dumps({
-            'requestID':f'{friendRequestID}',
-            'senderUsername':f'{sender}'
-        }))
+        async_to_sync(self.send(textData=dumps({
+            'requestID':reqID,
+            'senderUsername': sender
+        })))

@@ -5,6 +5,9 @@ from rest_framework.decorators import api_view
 from api.serializers import FRSerializer, getUserIDSerializer
 from api.models import friendRequest
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 @api_view(['POST'])
 def addContact(request):
     serializer = FRSerializer(data=request.data)
@@ -22,8 +25,8 @@ def addContact(request):
                     if not friendRequest.objects.filter(receiver=request.user.userID, sender=validSer['receiver']).exists():
                         newFR = friendRequest.objects.create(receiver=validSer['receiver'], sender=request.user.userID)
 
-                        createdfr = newFR.save()
-                        #updateFriendRequest(request, createdfr)
+                        newFR.save()
+                        sendFrNoti(request, newFR)
 
                         return Response({'msg':'Friend request sent.', 'requestID':f'{newFR.requestID}'}, status=201)
                     else:
@@ -53,7 +56,17 @@ def getUserID(request):
             return Response('')
     return Response("Invalid data")
 
-def updateFriendRequest(request, createdfr):
-    '''
-    receiver = User.objects.filter(username=createdfr.values("receiver"))
-    requestGroups = receiver.requestGroups.filter()'''
+def sendFrNoti(request, createdfr):
+    reqID = createdfr.requestID
+    receiverID = createdfr.receiver
+    receiverUsername = User.objects.filter(userID=receiverID).values("username")[0]["username"]
+    # CONTINUE HERE
+
+
+    '''grp = f'noti_{receiverID}'
+    channel_layer = get_channel_layer
+
+    async_to_sync(channel_layer.group_send)(
+        ''
+    )'''
+    
