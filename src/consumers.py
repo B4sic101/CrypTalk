@@ -2,7 +2,7 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from api.models import friendRequest
 from api.models import User
-from json import loads, dumps
+import json
 
 class FRConsumer(WebsocketConsumer):
     def connect(self):
@@ -20,8 +20,9 @@ class FRConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard(self.grp, self.channel_name))
     
-    def receive(self, data):
-        jData = loads(data)
+    def receive(self, text_data):
+        print(f"{text_data}")
+        jData = json.loads(text_data)
         reqID = jData["requestID"]
         receiverUserID = friendRequest.objects.filter(requestID=reqID).values("receiver")[0]["receiver"]
         senderUserID = friendRequest.objects.filter(requestID=reqID).values("sender")[0]["sender"]
@@ -47,7 +48,7 @@ class FRConsumer(WebsocketConsumer):
                 }
                 )
             )
-            print("Sent message to group")
+            print("Succesfully sent message to group")
         except Exception:
             print("User not online")
 
@@ -55,7 +56,7 @@ class FRConsumer(WebsocketConsumer):
         reqID = textData['requestID']
         sender = textData['sender']
 
-        async_to_sync(self.send(textData=dumps({
+        async_to_sync(self.send(textData=json.dumps({
             'requestID':reqID,
             'senderUsername': sender
         })))

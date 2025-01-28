@@ -91,7 +91,7 @@ function addContact(){
                             let reqID = response.requestID
                             console.log("Check 1")
 
-                            
+                             
                             if (statusCode === 404 || statusCode === 400){
                                 msg.innerText = infoMsg;
                                 msg.style.color = "rgb(205, 50, 50)";
@@ -100,12 +100,13 @@ function addContact(){
                                 msg.style.color = "rgb(68, 205, 50)";
                                 msg.innerText = infoMsg;
                                 foundResponse = true;
-                                console.log("Check 2")
-                                frSocket.onopen = (event) => {
-                                    console.log("Check 3")
-                                    frSocket.send({'requestID': reqID});
-                                    console.log("Websocket Message sent")
-                                };
+
+                                const sendingData = {
+                                    requestID:reqID
+                                }
+                                
+                                frSocket.send(JSON.stringify(sendingData));
+
                             } else if (!foundResponse) {
                                 msg.innerText = "Something went wrong.";
                                 msg.style.color = "rgb(205, 50, 50)";
