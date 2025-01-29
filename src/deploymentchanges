@@ -1,2 +1,3 @@
 channel layer default to redis
 Websocket url 'ws' to 'wss' ONLY HTTPS
+user input for friend request is not checked case sensitive?

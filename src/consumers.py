@@ -26,16 +26,16 @@ class FRConsumer(WebsocketConsumer):
         reqID = jData["requestID"]
         receiverUserID = friendRequest.objects.filter(requestID=reqID).values("receiver")[0]["receiver"]
         senderUserID = friendRequest.objects.filter(requestID=reqID).values("sender")[0]["sender"]
-        sender = User.objects.filter(username=senderUserID).values("username")[0]["username"]
+        sender = User.objects.filter(userID=senderUserID).values("username")[0]["username"]
         targetGrp = f'noti_{receiverUserID}'
         receiver = User.objects.filter(userID=receiverUserID).values("username")[0]["username"]
 
         # Truth table variables
         print(f"""------------- TRUTH TABLE -------------
-                        Target Group: {targetGrp}
-                        Receiver: {receiver}
-                        Sender: {sender}
-              ---------------- Outputs ---------------""")
+        Target Group: {targetGrp}
+        Receiver: {receiver}
+        Sender: {sender}
+---------------- OUTPUTS ---------------""")
 
         try:
             async_to_sync(
@@ -55,10 +55,10 @@ class FRConsumer(WebsocketConsumer):
     def frNotifier(self, textData):
         reqID = textData['requestID']
         sender = textData['sender']
-
         async_to_sync(self.send(textData=json.dumps({
             'requestID':reqID,
             'senderUsername': sender
         })))
+        
 
 

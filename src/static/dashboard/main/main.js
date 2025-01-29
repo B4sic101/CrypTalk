@@ -111,7 +111,7 @@ function addContact(){
                                 msg.innerText = "Something went wrong.";
                                 msg.style.color = "rgb(205, 50, 50)";
                             };
-                            console.log("Check 4")
+                            
                         });
                 });
              
@@ -127,13 +127,15 @@ frSocket.onmessage = function(event) {
     addFR(reqID, senderUsername);
 }
 
-function addFR(request, username){
+function addFR(request){
     const contactList = document.querySelector(".contacts");
     const template = document.querySelector(".FRTemplate");
 
     const FRDiv = template.cloneNode(true);
     const requestBody = FRDiv.querySelector(".friendRequest");
-    // Make an API to fetch necessary FRDetails
+    console.log("Got Friend request.")
+    
+    
 
     newFRDiv.appendChild(contactList);
 }
