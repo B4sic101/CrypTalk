@@ -124,10 +124,10 @@ function addContact(){
 frSocket.onmessage = function(event) {
     const reqID =  event.requestID;
     const senderUsername = event.senderUsername;
-    addFR(reqID, senderUsername);
+    displayFR(reqID, senderUsername);
 }
 
-function addFR(request){
+function displayFR(request){
     const contactList = document.querySelector(".contacts");
     const template = document.querySelector(".FRTemplate");
 
@@ -137,7 +137,7 @@ function addFR(request){
     
     
 
-    newFRDiv.appendChild(contactList);
+    FRDiv.appendChild(contactList);
 }
 
 function sendMessage(){

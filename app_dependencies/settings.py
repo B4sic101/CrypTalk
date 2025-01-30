@@ -81,8 +81,6 @@ CHANNEL_LAYERS = {
     }
 }
 
-# WSGI_APPLICATION = 'app_dependencies.wsgi.application'
-
 ASGI_APPLICATION = 'app_dependencies.asgi.application'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
@@ -91,6 +89,40 @@ SESSION_COOKIE_AGE = (3600 * 24) * 30
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 DATABASES = {
     'default': {
