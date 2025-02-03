@@ -2,6 +2,7 @@ const frSocket = new WebSocket(`ws://${window.location.host}/ws/notifyFR/`);
 
 window.addEventListener("load", () => {
     const chats = document.querySelectorAll(".chatBox");
+    const FRs = document.querySelectorAll(".contacts .friendRequest");
     const msgTextBox = document.querySelector(".entryField");
     const ACTextBox = document.querySelector(".addContactPopUp .container .input");
     const friendBtn = document.querySelector(".dashboardContainer .sidebar .reflectionProfile .profileConfigs .friendBtn");
@@ -11,6 +12,14 @@ window.addEventListener("load", () => {
     fixChats();
     chats.forEach((chat) => {
         chat.scrollTop = chat.scrollHeight;
+    });
+
+    FRs.forEach((fr) => {
+        const acceptBtn = fr.querySelector(".acceptBtn");
+        const rejectBtn = fr.querySelector(".rejectBtn");
+        
+        acceptBtn.addEventListener("click", acceptFR);
+        rejectBtn.addEventListener("click", rejectFR);
     });
 
     msgTextBox.addEventListener("keydown", msgKeyPressed);
@@ -122,22 +131,38 @@ function addContact(){
 }
 
 frSocket.onmessage = function(event) {
-    const reqID =  event.requestID;
-    const senderUsername = event.senderUsername;
-    displayFR(reqID, senderUsername);
+    displayFR(event);
 }
 
-function displayFR(request){
+function displayFR(event){
+    const requestDetails = JSON.parse(event.data);
     const contactList = document.querySelector(".contacts");
     const template = document.querySelector(".FRTemplate");
 
-    const FRDiv = template.cloneNode(true);
-    const requestBody = FRDiv.querySelector(".friendRequest");
-    console.log("Got Friend request.")
-    
-    
+    const tempDup = template.cloneNode(true);
+    const FRDiv = tempDup.content.querySelector(".friendRequest");
 
-    FRDiv.appendChild(contactList);
+    const requestID = FRDiv.querySelector(".friendRequestID");
+    requestID.innerText = requestDetails.requestID;
+
+    const sender = FRDiv.querySelector(".contactUsername");
+    sender.innerText = requestDetails.sender;
+
+    const senderID = requestDetails.senderID;
+
+    const profile = FRDiv.querySelector("img");
+    profile.src = `/uploads/profiles/user_${senderID}.jpeg`
+
+    contactList.appendChild(FRDiv);
+    
+}
+
+function rejectFR(frDiv){
+    // Rejecting Friend Requests
+}
+
+function acceptFR(frDiv){
+    // Accepting Friend Requests
 }
 
 function sendMessage(){

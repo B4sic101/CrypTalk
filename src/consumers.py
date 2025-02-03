@@ -13,12 +13,12 @@ class FRConsumer(WebsocketConsumer):
             # Accept the connection
             user = self.scope['user']
             self.group_name = f'noti_{user.userID}'
-            async_to_sync(self.channel_layer.group_add(self.group_name, self.channel_name))
+            async_to_sync(self.channel_layer.group_add)(self.group_name, self.channel_name)
             print(f"---- {user.username} with a userID of {user.userID} is in the group {self.group_name}.")
             self.accept()
     
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard(self.group_name, self.channel_name))
+        async_to_sync(self.channel_layer.group_discard)(self.group_name, self.channel_name)
     
     def receive(self, text_data):
         print(f"{text_data}")
@@ -47,23 +47,18 @@ class FRConsumer(WebsocketConsumer):
                 {
                     'type': 'fr.notifier',
                     'requestID': reqID,
-                    'sender': sender
+                    'sender': sender,
+                    'senderID': str(sender_user_id)
                 }
                 )
-            print("Succesfully sent message to group", flush=True)
-        except Exception:
-            print("User not online", flush=True)
+            print("Succesfully sent message to group")
+        except Exception as e:
+            print(f"ERROR: {e}")
 
-    def fr_notifier(self, textData):
-        print("Fr Notifier has been called", flush=True)
+    def fr_notifier(self, text_data):
+        print("Fr Notifier has been called")
         try:
-            reqID = textData['requestID']
-            sender = textData['sender']
-
-            async_to_sync(self.send(textData=json.dumps({
-                'requestID':reqID,
-                'senderUsername': sender
-            })))
-            print("Friend request notification sent", flush=True)
-        except Exception:
-            print("ERROR: User is not online for FR notification.", flush=True)
+            async_to_sync(self.send(text_data=json.dumps(text_data)))
+            print("Friend request notification sent")
+        except Exception as e:
+            print(f"ERROR: {e}")

@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <title>CrypTalk</title>
     <link rel="icon" href="data:;base64,=">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'authentication/login.css' %}">
 </head>
 <body>
 <form method="POST" autocomplete="off">
     {% csrf_token %}
     <div class="form-group">
-        <input type="text" class="form-control" name="username" aria-describedby="emailHelp" placeholder="Username">
+        <input class="input" type="text" class="form-control" name="username" aria-describedby="emailHelp" placeholder="Username">
       </div>
       <div class="form-group">
-        <input type="password" class="form-control" name="password" aria-describedby="emailHelp" placeholder="Password">
+        <input class="input" type="password" class="form-control" name="password" aria-describedby="emailHelp" placeholder="Password">
       </div>
-    <button>Login</button>
+    <button class="loginBtn">Login</button>
+
     <div>Don't have an account? <a href="{% url 'register' %}">Sign up</a></div>
     <div><a href="{%url 'reset_password'%}">Forgot password?</a></div>
 </form>
