@@ -5,21 +5,25 @@
     <title>CrypTalk</title>
     <link rel="icon" href="data:;base64,=">
     {% load static %}
-    <link rel="stylesheet" href="{% static 'authentication/login.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="{% static 'authentication/login/login.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'authentication/login/login.css' %}">
+    <script src="https://kit.fontawesome.com/c970b059ac.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <form method="POST" autocomplete="off">
+    <h1 class="loginTitle">Login</h1>
     {% csrf_token %}
     <div class="form-group">
         <input class="input" type="text" class="form-control" name="username" aria-describedby="emailHelp" placeholder="Username">
       </div>
       <div class="form-group">
-        <input class="input" type="password" class="form-control" name="password" aria-describedby="emailHelp" placeholder="Password">
+        <input class="input passwordInput" type="password" class="form-control" name="password" aria-describedby="emailHelp" placeholder="Password"><i class="fa-regular fa-eye"></i>
       </div>
     <button class="loginBtn">Login</button>
 
-    <div>Don't have an account? <a href="{% url 'register' %}">Sign up</a></div>
-    <div><a href="{%url 'reset_password'%}">Forgot password?</a></div>
+    <div>Don't have an account? <a class="redirect" href="{% url 'register' %}">Sign up</a></div>
+    <div><a class="redirect" href="{%url 'reset_password'%}">Forgot password?</a></div>
 </form>
 </body>
 </html>

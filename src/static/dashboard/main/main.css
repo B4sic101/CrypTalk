@@ -300,7 +300,7 @@
     padding: 1vh;
     font-size: 2vh;
     cursor: pointer;
-    
+    transition: background 200ms;
 }
 
 .addContactPopUp .submitBtn:hover {
