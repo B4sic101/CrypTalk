@@ -23,29 +23,31 @@ class registerForm(UserCreationForm):
         password1 = cleanedData.get("password1")
         password2 = cleanedData.get("password2")
 
-        error = authVal.passwordValid(password1)
+        if password1 != None and password2 != None:
 
-        if error is not None:
-            self.add_error("password1", error)
-    
-        self.errors.pop("password2", None)
+            error = authVal.passwordValid(password1)
 
-        if password1 and password2 and password1 != password2:
-            self.add_error("password2", "Passwords do not match.")
-
-        if username is None:
-            return cleanedData
+            if error is not None:
+                self.add_error("password1", error)
         
-        if User.objects.filter(username=username).exists():
-            self.add_error("username", "Username taken.")
+            self.errors.pop("password2", None)
+
+            if username is None:
+                return cleanedData
             
-        if search(r"^\s|\s{2,}|\s$", username):
-            self.add_error("username", "Invalid Username")
+            if User.objects.filter(username=username).exists():
+                self.add_error("username", "Username taken.")
+                
+            if search(r"^\s|\s{2,}|\s$", username):
+                self.add_error("username", "Invalid Username")
 
-        if User.objects.filter(email=email).exists():
-            self.add_error("email", "Email already exists.")
+            if User.objects.filter(email=email).exists():
+                self.add_error("email", "Email already exists.")
 
-        return cleanedData
+            if password1 and password2 and password1 != password2:
+                self.add_error("password2", "Passwords do not match.")
+
+            return cleanedData
 
 
 class loginForm(AuthenticationForm):

@@ -138,6 +138,7 @@
     background: none;
     cursor: pointer;
     color: white;
+    transition: background 200ms;
 }
 
 .acceptBtn {
@@ -148,6 +149,7 @@
     background: none;
     cursor: pointer;
     color: white;
+    transition: background 200ms;
 }
 
 /* Settings */

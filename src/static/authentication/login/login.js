@@ -15,24 +15,25 @@ window.addEventListener("load", () => {
 
 let isToggled = false;
 $(document).ready(function(){
-    $(".passwordInput .fa-eye").click(function(){
+    $(".fa-regular").click(function(){
         if (!isToggled){
-            showPasswd(this);
-        }
-        else {
             hidePasswd(this);
         }
+        else {
+            showPasswd(this);
+        }
+        isToggled = !isToggled;
     });
 });
 
 function showPasswd(passwdToggle){
     passwdToggle.classList.replace("fa-eye", "fa-eye-slash");
     const passwdInput = document.querySelector(".passwordInput");
-    passwdInput.type = "text"
+    passwdInput.type = "text";
 };
 
 function hidePasswd(passwdToggle){
     passwdToggle.classList.replace("fa-eye-slash", "fa-eye");
     const passwdInput = document.querySelector(".passwordInput");
-    passwdInput.type = "password"
+    passwdInput.type = "password";
 };
