@@ -161,7 +161,7 @@ function displayFR(event){
 function rejectFR(){
     // Rejecting Friend Requests
     console.log(this.classList[1]);
-    const frDiv = document.querySelector(`.\${this.classList[1]}`).parentElement;
+    const frDiv = document.querySelector(`.${this.classList[1]}`).parentElement;
     const reqID = this.classList[1];
     fetch(`/api/rejectFR?requestID=${reqID}`)
         .then(data => {
