@@ -21,26 +21,15 @@ class FRConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(self.group_name, self.channel_name)
     
     def receive(self, text_data):
-        print(f"{text_data}")
         jData = json.loads(text_data)
         reqID = jData["requestID"]
         friend_request = friendRequest.objects.get(requestID=reqID)
         receiver_user_id = friend_request.receiver
-        receiver = User.objects.get(userID=receiver_user_id).username
         sender_user_id = friend_request.sender
         sender = User.objects.get(userID=sender_user_id).username
         targetGrp = f'noti_{receiver_user_id}'
 
-        # Truth table variables
-        print(f"""------------- TRUTH TABLE -------------
-        Target Group: {targetGrp}
-        Receiver: {receiver}
-        Sender: {sender}
-        Own Group Name: {self.group_name}
----------------- OUTPUTS ---------------""")
-
         try:
-            print("Sending to..." + targetGrp)
             async_to_sync(
                 self.channel_layer.group_send)(
                 targetGrp,
@@ -56,7 +45,6 @@ class FRConsumer(WebsocketConsumer):
             print(f"ERROR: {e}")
 
     def fr_notifier(self, text_data):
-        print("Fr Notifier has been called")
         try:
             async_to_sync(self.send(text_data=json.dumps(text_data)))
             print("Friend request notification sent")

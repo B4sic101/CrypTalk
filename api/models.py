@@ -9,8 +9,9 @@ class friendRequest(models.Model):
 
 class chat(models.Model):
     chatID = models.UUIDField(primary_key=True, unique=True, default = uuid4)
-    sender = models.UUIDField(unique=True)
-    receiver = models.UUIDField(unique=True)
+    sender = models.UUIDField(unique=True, default = uuid4)
+    receiver = models.UUIDField(unique=True, default = uuid4)
+    key = models.UUIDField(unique=True, default = uuid4)
 
 class channel(models.Model):
     channelName = models.CharField(primary_key=True, unique=True, max_length=255)

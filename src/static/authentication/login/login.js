@@ -1,22 +1,16 @@
 window.addEventListener("load", () => {
-    const passwdToggle = document.querySelector(".fa-eye");
     let isToggled = false;
-    passwdToggle.addEventListener("click", function(event){
-        if (!isToggled){
-            showPasswd(passwdToggle);
-            isToggled = true;
-        }
-        else {
-            hidePasswd(passwdToggle);
-            isToggled = false;
-        }
-    });
+
 });
 
 let isToggled = false;
 $(document).ready(function(){
+    const passwdToggle = document.querySelector(".fa-eye");
+    const passwordField = document.querySelector(".passwordInput");
+    console.log(`Toggle height: ${passwdToggle.style.height}, Field height: ${passwordField.style.height}`)
+    passwdToggle.style.height = `${passwordField.style.height}px`;
     $(".fa-regular").click(function(){
-        if (!isToggled){
+        if (isToggled){
             hidePasswd(this);
         }
         else {

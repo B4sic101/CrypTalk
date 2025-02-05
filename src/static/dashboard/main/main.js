@@ -1,4 +1,5 @@
 const frSocket = new WebSocket(`ws://${window.location.host}/ws/notifyFR/`);
+let csrftoken;
 
 window.addEventListener("load", () => {
     const chats = document.querySelectorAll(".chatBox");
@@ -8,6 +9,7 @@ window.addEventListener("load", () => {
     const friendBtn = document.querySelector(".dashboardContainer .sidebar .reflectionProfile .profileConfigs .friendBtn");
     const exitfriendBtn = document.querySelector(".addContactPopUp .exitBtn");
     const submitRequestBtn = document.querySelector(".addContactPopUp .container .submitBtn");
+    csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
     fixChats();
     chats.forEach((chat) => {
@@ -78,7 +80,6 @@ function addContact(){
             debug = true;
             const msg = document.querySelector(".addContactPopUp .container .msg");
             let userid;
-            let csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
             let statusCode = 0;
             fetch(`/api/get-userid?username=${userToAdd.value}`)
                 .then(data => {return data.json();})
@@ -98,7 +99,6 @@ function addContact(){
                             let foundResponse = false;
                             let infoMsg = response.msg
                             let reqID = response.requestID
-                            console.log("Check 1")
 
                              
                             if (statusCode === 404 || statusCode === 400){
@@ -109,12 +109,8 @@ function addContact(){
                                 msg.style.color = "rgb(68, 205, 50)";
                                 msg.innerText = infoMsg;
                                 foundResponse = true;
-
-                                const sendingData = {
-                                    requestID:reqID
-                                }
                                 
-                                frSocket.send(JSON.stringify(sendingData));
+                                frSocket.send(JSON.stringify({requestID:reqID}));
 
                             } else if (!foundResponse) {
                                 msg.innerText = "Something went wrong.";
@@ -155,14 +151,46 @@ function displayFR(event){
 
     contactList.appendChild(FRDiv);
     
+    const acceptBtn = FRDiv.querySelector(".acceptBtn");
+    const rejectBtn = FRDiv.querySelector(".rejectBtn");
+
+    acceptBtn.addEventListener("click", acceptFR);
+    rejectBtn.addEventListener("click", rejectFR);
 }
 
-function rejectFR(frDiv){
+function rejectFR(){
     // Rejecting Friend Requests
+    console.log(this.classList[1]);
+    const frDiv = document.querySelector(`.\${this.classList[1]}`).parentElement;
+    const reqID = this.classList[1];
+    fetch(`/api/rejectFR?requestID=${reqID}`)
+        .then(data => {
+            return data.status;
+        })
+        .then(statusCode => {
+            // If the friend request was deleted succesfully, reflect the changes
+            if (statusCode == 200){
+                frDiv.remove()
+            }
+        })
 }
 
-function acceptFR(frDiv){
+function acceptFR(){
     // Accepting Friend Requests
+    let statusCode;
+    const reqID = this.querySelector(".friendRequestID").innerText;
+    const frDiv = document.querySelector(`.${reqID}`)
+    fetch(`/api/acceptFR?reqid=${reqID}`)
+        .then(data => {
+            statusCode = data.status;
+            return data.json();
+        })
+        .then(response => {
+            // If chat created, reflect changes
+            if (statusCode == 201){
+                frDiv.remove()
+            }
+        })
 }
 
 function sendMessage(){
