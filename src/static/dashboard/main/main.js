@@ -194,6 +194,7 @@ function acceptFR(){
             // If chat created, reflect changes
             if (statusCode == 201){
                 frDiv.remove();
+                console.log(`Response: ${response}`)
                 console.log(`Encryption Key = ${response.cryptkey}`);
             }
         })

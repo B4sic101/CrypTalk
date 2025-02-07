@@ -6,6 +6,7 @@ from api.serializers import FRSerializer, getUserIDSerializer, FRreceivingSerial
 from api.models import friendRequest, chat
 
 from secrets import token_bytes
+from base64 import b64encode
 
 @api_view(['POST'])
 def addContact(request):
@@ -75,8 +76,8 @@ def acceptFR(request):
         sender = fr.sender
         fr.delete()
 
-        encryptionKey = hex(token_bytes(32))
-        genIV = hex(token_bytes(32))
+        encryptionKey = b64encode(token_bytes(32)).decode()
+        genIV = b64encode(token_bytes(32)).decode()
         newChat = chat.objects.create(sender=sender, receiver=request.user.userID, crypt_key=encryptionKey, iv=genIV)
         data = {'cryptKey': f'{newChat.crypt_key}', 'iv':f'{newChat.iv}'}
 
