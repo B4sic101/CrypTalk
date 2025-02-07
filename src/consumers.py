@@ -14,7 +14,6 @@ class FRConsumer(WebsocketConsumer):
             user = self.scope['user']
             self.group_name = f'noti_{user.userID}'
             async_to_sync(self.channel_layer.group_add)(self.group_name, self.channel_name)
-            print(f"---- {user.username} with a userID of {user.userID} is in the group {self.group_name}.")
             self.accept()
     
     def disconnect(self, close_code):

@@ -49,9 +49,8 @@
                     <div class="contact friendRequest">
                         <img src="">
                         <div class="contactUsername"></div>
-                        <div class="friendRequestID"></div>
-                        <button class="acceptBtn">✅ Accept</button>
-                        <button class="rejectBtn">❌ Reject</button>
+                        <button class="acceptBtn">✅ Accept<div class="requestID"></div></button>
+                        <button class="rejectBtn">❌ Reject<div class="requestID"></div></button>
                     </div>
                 </template>
 
@@ -59,8 +58,8 @@
                     <div class="contact friendRequest">
                         <img src="{{ req.senderProfile }}">
                         <div class="contactUsername">{{req.senderUsername}}</div>
-                        <button class="acceptBtn {{req.requestID}}">✅ Accept</button>
-                        <button class="rejectBtn {{req.requestID}}">❌ Reject</button>
+                        <button class="acceptBtn">✅ Accept<div class="requestID">{{req.requestID}}</div></button>
+                        <button class="rejectBtn">❌ Reject<div class="requestID">{{req.requestID}}</div></button>
                     </div>
                 {% endfor %}
             </div>

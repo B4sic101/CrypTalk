@@ -393,3 +393,7 @@
     background: #313131;
     color: white;
 }
+
+.requestID {
+    display: none;
+}

@@ -138,8 +138,10 @@ function displayFR(event){
     const tempDup = template.cloneNode(true);
     const FRDiv = tempDup.content.querySelector(".friendRequest");
 
-    const requestID = FRDiv.querySelector(".friendRequestID");
-    requestID.innerText = requestDetails.requestID;
+    const requestIDs = FRDiv.querySelectorAll(".requestID");
+    requestIDs.forEach((request) => {
+        request.innerText = requestDetails.requestID;
+    })
 
     const sender = FRDiv.querySelector(".contactUsername");
     sender.innerText = requestDetails.sender;
@@ -160,9 +162,10 @@ function displayFR(event){
 
 function rejectFR(){
     // Rejecting Friend Requests
-    console.log(this.classList[1]);
-    const frDiv = document.querySelector(`.${this.classList[1]}`).parentElement;
-    const reqID = this.classList[1];
+    const reqIDiv = this.querySelector(".requestID");
+    const frDiv = reqIDiv.parentElement.parentElement;
+    const reqID = reqIDiv.innerText;
+
     fetch(`/api/rejectFR?requestID=${reqID}`)
         .then(data => {
             return data.status;
@@ -177,10 +180,12 @@ function rejectFR(){
 
 function acceptFR(){
     // Accepting Friend Requests
+    const reqIDiv = this.querySelector(".requestID");
+    const frDiv = reqIDiv.parentElement.parentElement;
+    const reqID = reqIDiv.innerText;
+
     let statusCode;
-    const reqID = this.querySelector(".friendRequestID").innerText;
-    const frDiv = document.querySelector(`.${reqID}`)
-    fetch(`/api/acceptFR?reqid=${reqID}`)
+    fetch(`/api/acceptFR?requestID=${reqID}`)
         .then(data => {
             statusCode = data.status;
             return data.json();
@@ -188,7 +193,8 @@ function acceptFR(){
         .then(response => {
             // If chat created, reflect changes
             if (statusCode == 201){
-                frDiv.remove()
+                frDiv.remove();
+                console.log(`Encryption Key = ${response.cryptkey}`);
             }
         })
 }

@@ -5,8 +5,7 @@ from rest_framework.decorators import api_view
 from api.serializers import FRSerializer, getUserIDSerializer, FRreceivingSerializer
 from api.models import friendRequest, chat
 
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from secrets import token_bytes
 
 @api_view(['POST'])
 def addContact(request):
@@ -24,7 +23,7 @@ def addContact(request):
 
                     if not friendRequest.objects.filter(receiver=validSer['receiver'], sender=request.user.userID).exists():
                         if not friendRequest.objects.filter(receiver=request.user.userID, sender=validSer['receiver']).exists():
-                            if not chat.objects.filter(receiver=request.user.userID).exists():
+                            if not chat.objects.filter(sender=request.user.userID).exists():
                                 newFR = friendRequest.objects.create(receiver=validSer['receiver'], sender=request.user.userID)
 
                                 newFR.save()
@@ -61,38 +60,39 @@ def getUserID(request):
 
 @api_view(['GET'])
 def rejectFR(request):
-    serializer = FRreceivingSerializer(data=request.query_params)
-    
-    if request.user.is_authenticated:
-        if serializer.is_valid():
+    fr = frRequestChecker(request)
+    if fr is not None:
 
-            validSer = serializer.validated_data
-            if friendRequest.objects.filter(requestID=validSer['requestID']).exists():
-
-                fr = friendRequest.objects.get(requestID=validSer['requestID'])
-                if fr.receiver == request.user.userID:
-
-                    fr.delete()
-                    return Response(status=200)
+        fr.delete()
+        return Response(status=200)
     
     return Response(status=403)
 
 @api_view(['GET'])
 def acceptFR(request):
+    fr = frRequestChecker(request)
+    if fr is not None:
+        sender = fr.sender
+        fr.delete()
+
+        encryptionKey = hex(token_bytes(32))
+        genIV = hex(token_bytes(32))
+        newChat = chat.objects.create(sender=sender, receiver=request.user.userID, crypt_key=encryptionKey, iv=genIV)
+        data = {'cryptKey': f'{newChat.crypt_key}', 'iv':f'{newChat.iv}'}
+
+        return Response(data, status=201)
+    return Response(status=403)
+
+def frRequestChecker(request):
     serializer = FRreceivingSerializer(data=request.query_params)
+
     if request.user.is_authenticated:
         if serializer.is_valid():
 
             validSer = serializer.validated_data
             if friendRequest.objects.filter(requestID=validSer['requestID']).exists():
+
                 fr = friendRequest.objects.get(requestID=validSer['requestID'])
-
                 if fr.receiver == request.user.userID:
-                    sender = fr.sender
-                    fr.delete()
-
-                    newChat = chat.objects.create(sender=sender, receiver=request.user.userID)
-                    data = {'key': f'{newChat}'}
-
-                    return Response(data, status=201)
-    return Response(status=403)
+                    return fr
+    return None
