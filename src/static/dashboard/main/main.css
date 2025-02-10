@@ -355,6 +355,7 @@
     overflow: visible;
     width: fit-content;
     text-decoration: none;
+    margin-right: 50%;
 }
 
 .messageBlock .contact {
@@ -376,6 +377,7 @@
     word-wrap: break-word;
     border-radius: 2.5vh 2.5vh 2.5vh 0vh; 
     overflow-x: none;
+    float: left;
 }
 
 .messageBlock .contact .message .messageContent{
@@ -395,6 +397,7 @@
 
 .receiver {
     margin-right: 0%;
+    margin-left: 50%;
     float: right;
 }
 
