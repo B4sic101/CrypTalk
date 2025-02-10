@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from src.models import User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -78,9 +77,17 @@ def acceptFR(request):
 
         encryptionKey = b64encode(token_bytes(32)).decode()
         genIV = b64encode(token_bytes(32)).decode()
-        newChat = chat.objects.create(sender=sender, receiver=request.user.userID, crypt_key=encryptionKey, iv=genIV)
-        data = {'cryptKey': f'{newChat.crypt_key}', 'iv':f'{newChat.iv}'}
 
+        newChat = chat.objects.create(sender=sender, receiver=request.user.userID, crypt_key=encryptionKey, iv=genIV)
+
+        username = ""
+
+        if request.user.userID == newChat.receiver:
+            username = User.objects.get(userID=newChat.sender).username
+        else:
+            username = User.objects.get(userID=newChat.receiver).username
+
+        data = {'cryptKey': encryptionKey, 'iv': genIV, 'chatID': newChat.chatID, 'receiver': newChat.receiver, 'sender': newChat.sender, 'username': username}
         return Response(data, status=201)
     return Response(status=403)
 

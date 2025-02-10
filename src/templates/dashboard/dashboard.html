@@ -16,6 +16,7 @@
 
     <!-- SIDEBAR -->
     <div class="dashboardContainer">
+        <div class="welcomeMsg">Welcome to Cryptalk. Add a contact and start communicating securely with end-to-end data encryption.</div>
         <div class="sidebar">
             <div class="reflectionProfile">
                 <img src="{{ profileimage }}">
@@ -33,33 +34,49 @@
             <!-- CONTACT LIST -->
 
             <div class="contacts">
-                <div class="contact">
-                    <img src="../../static/dummyUser.png">
-                    <div class="contactUsername">Mr Plook</div>
-                    <div class="latestMessage">Package here yet?</div>
-                </div>
-
-                <div class="contact active">
-                    <img src="../../static/dummyUser.png">
-                    <div class="contactUsername">Luke Mandore</div>
-                    <div class="latestMessage">Hi there.</div>
-                </div>
+                <template class="contactTemplate">
+                    <div class="contact">
+                        <div class="chatID"></div>
+                        <img src="">
+                        <div class="contactUsername"></div>
+                        <div class="latestMessage"></div>
+                    </div>
+                </template>
                 
                 <template class="FRTemplate">
                     <div class="contact friendRequest">
                         <img src="">
                         <div class="contactUsername"></div>
-                        <button class="acceptBtn">✅ Accept<div class="requestID"></div></button>
-                        <button class="rejectBtn">❌ Reject<div class="requestID"></div></button>
+                        <button class="acceptBtn frbtn">✅ Accept<div class="requestID"></div></button>
+                        <button class="rejectBtn frbtn">❌ Reject<div class="requestID"></div></button>
                     </div>
                 </template>
 
+                {% for chat in chats %}
+                    {% if chat.whoami == 'sender' %}
+                        <div class="contact">
+                            <div class="chatID">{{ chat.chatID }}</div>
+                            <img src="/uploads/profiles/user_{{ chat.receiver }}.jpeg">
+                            <div class="contactUsername">{{ chat.receiverUsername }}</div>
+                            <div class="latestMessage">{{ chat.latest_message }}</div>
+                        </div>
+                    {% else %}
+                        <div class="contact">
+                            <div class="chatID">{{ chat.chatID }}</div>
+                            <img src="/uploads/profiles/user_{{ chat.sender }}.jpeg">
+                            <div class="contactUsername">{{ chat.senderUsername }}</div>
+                            <div class="latestMessage">{{ chat.latest_message }}</div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+
                 {% for req in friendRequests %}
                     <div class="contact friendRequest">
-                        <img src="{{ req.senderProfile }}">
+                        <img src="/uploads/profiles/user_{{ req.sender }}.jpeg">
                         <div class="contactUsername">{{req.senderUsername}}</div>
-                        <button class="acceptBtn">✅ Accept<div class="requestID">{{req.requestID}}</div></button>
-                        <button class="rejectBtn">❌ Reject<div class="requestID">{{req.requestID}}</div></button>
+                        <button class="acceptBtn frbtn">✅ Accept<div class="requestID">{{req.requestID}}</div></button>
+                        <button class="rejectBtn frbtn">❌ Reject<div class="requestID">{{req.requestID}}</div></button>
                     </div>
                 {% endfor %}
             </div>
@@ -70,19 +87,98 @@
             <div class="container">
                 <div class="title">Add Contact</div>
                 <div class="description">Enter the username of the person you want to add:</div>
-                <input type="text" class="input" placeholder="Username">
+                <input type="text" class="FRInput" placeholder="Username">
                 <div class="msg"></div>
                 <button class="submitBtn">Submit</button>
             </div>
         </div>
 
-        <!-- Message Box -->
-        <div class="msgBox">
+        {% for chat in chats %}
+            {% if chat.whoami == 'sender' %}
+                <div class="msgBox">
+                    <div class="details">
+                        <div class="chatID details">{{ chat.chatID }}</div>
+                        <div class="cryptKey details">{{ chat.crypt_key }}</div>
+                        <div class="iv details">{{ chat.iv }}</div>
+                    </div>
+                    <div class="msgTopBar">
+                        <div class="contact profileOfContact">
+                            <img src="/uploads/profiles/user_{{ chat.receiver }}.jpeg">
+                            <div class="contactUsername contactInfo">{{ chat.receiverUsername }}</div>
+                            <div class="contactStatus contactInfo"></div>
+                        </div>
+                        <div class="appInfo">
+                            <div class="appInfo fa-solid fa-lock"></div>
+                            <div class="appInfo appVersion">V0.5.0 BETA</div>
+                            <div class="appInfo encryptionInfo">AES-256 Encryption</div>
+                        </div>
+                    </div>
+        
+                    <!-- Chat Box -->
+                    <div class="chatBox"></div>
+                    <form type="POST" class="typeBox">
+                        <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
+                        <button></button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="msgBox">
+                    <div class="details">
+                        <div class="chatID details">{{ chat.chatID }}</div>
+                        <div class="cryptKey details">{{ chat.crypt_key }}</div>
+                        <div class="iv details">{{ chat.iv }}</div>
+                    </div>
+                    <div class="msgTopBar">
+                        <div class="contact profileOfContact">
+                            <img src="/uploads/profiles/user_{{ chat.sender }}.jpeg">
+                            <div class="contactUsername contactInfo">{{ chat.senderUsername }}</div>
+                            <div class="contactStatus contactInfo"></div>
+                        </div>
+                        <div class="appInfo">
+                            <div class="appInfo fa-solid fa-lock"></div>
+                            <div class="appInfo appVersion">V0.5.0 BETA</div>
+                            <div class="appInfo encryptionInfo">AES-256 Encryption</div>
+                        </div>
+                    </div>
+        
+                    <!-- Chat Box -->
+                    <ul class="chatBox">
+                        <li class="sender messageBlock">
+                            <div class="contact">
+                                <div class="message contactInfo">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Provident iure, tempore molestias ducimus inventore porro reiciendis itaque. Eveniet nulla dolorem hic. Et mollitia cumque, ipsam ducimus earum ut! Possimus, iste!<div class="time contactInfo">10:02 AM</div></div>
+                            </div>
+                        </li>
+                        <li class="receiver messageBlock">
+                            <div class="contact">
+                                <div class="message contactInfo">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt asperiores velit magni, id laborum laudantium minima, a, consectetur voluptate incidunt eos laboriosam porro veniam fugiat tenetur ratione repudiandae quisquam. Explicabo?<div class="time contactInfo">3:02 AM</div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="sender messageBlock">
+                            <div class="contact">
+                                <div class="message contactInfo">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Provident iure, tempore molestias ducimus inventore porro reiciendis itaque. Eveniet nulla dolorem hic. Et mollitia cumque, ipsam ducimus earum ut! Possimus, iste!<div class="time contactInfo">10:02 AM</div></div>
+                            </div>
+                        </li>
+                    </ul>
+                    <form type="POST" class="typeBox">
+                        <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
+                        <button></button>
+                    </form>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="msgBox dummyMsgBox">
+            <div class="details">
+                <div class="chatID details"></div>
+                <div class="cryptKey details"></div>
+                <div class="iv details"></div>
+            </div>
             <div class="msgTopBar">
-                <div class="contact">
+                <div class="contact profileOfContact">
                     <img src="../../static/dummyUser.png">
-                    <div class="contactUsername contactInfo">Mr Plook</div>
-                    <div class="contactStatus contactInfo">Online</div>
+                    <div class="contactUsername contactInfo"></div>
+                    <div class="contactStatus contactInfo"></div>
                 </div>
                 <div class="appInfo">
                     <div class="appInfo fa-solid fa-lock"></div>
@@ -104,12 +200,44 @@
                     </div>
                 </div>
             </div>
-            <form type="{POST}" class="typeBox">
+            <form type="POST" class="typeBox">
                 <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
                 <button></button>
             </form>
         </div>
+
+        <template class="msgBoxTemplate">
+            <div class="msgBox">
+                <div class="details">
+                    <div class="chatID details"></div>
+                    <div class="cryptKey details"></div>
+                    <div class="iv details"></div>
+                </div>
+                <div class="msgTopBar">
+                    <div class="contact profileOfContact">
+                        <img src="">
+                        <div class="contactUsername contactInfo"></div>
+                        <div class="contactStatus contactInfo"></div>
+                    </div>
+                    <div class="appInfo">
+                        <div class="appInfo fa-solid fa-lock"></div>
+                        <div class="appInfo appVersion">V0.5.0 BETA</div>
+                        <div class="appInfo encryptionInfo">AES-256 Encryption</div>
+                    </div>
+                </div>
+    
+                <!-- Chat Box -->
+    
+                <div class="chatBox">
+                </div>
+                <form type="POST" class="typeBox">
+                    <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
+                    <button></button>
+                </form>
+            </div>
+        </template>
     </div>
+    
 
     <!-- SETTINGS -->
     <div class="settingsContainer">

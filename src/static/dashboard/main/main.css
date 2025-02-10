@@ -12,6 +12,19 @@
 
 .dashboardContainer {
     display: flex;
+    background: #1A1A1A;
+}
+
+.welcomeMsg {
+    position: absolute;
+    left: 45%;
+    top: 45%;
+    color: white;
+    opacity: 20%;
+    font-size: 2vh;
+    text-align: center;
+    text-wrap: wrap;
+    width: 40vh;
 }
 
 .sidebar {
@@ -83,6 +96,14 @@
     height: 8vh;
     overflow-x: hidden;
     cursor: pointer;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    transition: background 120ms;
+}
+
+.active{
+    background: #000000;
 }
 
 .contact img{
@@ -91,6 +112,7 @@
     height: 5vh;
     top: 1.5vh;
     left: 1.5vh;
+    border-radius: 100%; 
 }
 
 .contactUsername {
@@ -107,10 +129,7 @@
     opacity: 60%;
     font-size: 1.5vh;
     bottom: 3.4vh;
-}
-
-.active{
-    background: #000000;
+    display: none;
 }
 
 .friendRequest {
@@ -130,26 +149,28 @@
     border-radius: 100%;
 }
 
-.rejectBtn {
+.frbtn {
     position: relative;
-    left: 8vh;
-    bottom: 3vh;
-    font-size: 1.6vh;
+    left: 7.3vh;
+    bottom: 3.5vh;
+    font-size: 1.5vh;
+    padding: .3vh;
+    padding-right: .6vh;
     background: none;
     cursor: pointer;
     color: white;
-    transition: background 200ms;
+    border-radius: 6px 6px 6px 6px; 
+    transition: background 250ms;
 }
 
-.acceptBtn {
-    position: relative;
-    left: 8vh;
-    bottom: 3vh;
-    font-size: 1.6vh;
-    background: none;
-    cursor: pointer;
-    color: white;
-    transition: background 200ms;
+.frbtn:hover {
+    background-color: #555b36;
+    transition: background-color 250ms;
+}
+
+.frbtn:active {
+    transform: scale(0.90);
+    background-color: #b1bb71;
 }
 
 /* Settings */
@@ -164,6 +185,19 @@
     color: white;
     width: 100%;
     background: #1A1A1A;
+    display: none;
+}
+
+.msgBox .details {
+    display: none;
+}
+.chatID {
+    display: none;
+}
+
+.dummyMsgBox {
+    visibility: hidden;
+    display: block;
 }
 
 .msgTopBar {
@@ -257,7 +291,7 @@
     left: 10vh;
 }
 
-.addContactPopUp .input {
+.addContactPopUp .FRInput {
     background: #181818;
     color: white;
     width: 47vh;
@@ -316,12 +350,11 @@
 
 .messageBlock {
     display: flex;
-    flex-direction: column;
     max-width: 50%;
-    margin-right: 50%;
     height: auto;
     overflow: visible;
     width: fit-content;
+    text-decoration: none;
 }
 
 .messageBlock .contact {
@@ -338,18 +371,20 @@
     background: #4D4D4D;
     color: white;
     padding: 1.2vh;
-    padding-top: .8vh;
-    padding-bottom: 0vh;
-    height: auto;
-    max-width: 100%;
+    padding-right: 1.5vh;
+    padding-bottom: .2vh;
     word-wrap: break-word;
-    white-space: pre-wrap; 
-    border-radius: 6px 6px 6px 0px; 
+    border-radius: 2.5vh 2.5vh 2.5vh 0vh; 
     overflow-x: none;
 }
 
+.messageBlock .contact .message .messageContent{
+    right: 10vh;
+    height: auto;
+}
+
 .messageBlock .contact .time {
-    margin-top: 1vh; 
+    margin-top: .5vh; 
     float: right;
     margin-left: 1vh;
     margin-bottom: 1vh;
@@ -357,15 +392,17 @@
     color: #999;
 }
 
+
 .receiver {
     margin-right: 0%;
     float: right;
 }
 
 .receiver .contact .message {
-    border-radius: 6px 6px 0px 6px;
+    border-radius: 2.5vh 2.5vh 0vh 2.5vh;
+    padding-left: 1.5vh;
+    padding-right: 1.2vh;
     background: #005593;
-    overflow-x: hidden;
 }
 
 .typeBox {

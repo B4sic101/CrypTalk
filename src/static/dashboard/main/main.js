@@ -1,19 +1,24 @@
 const frSocket = new WebSocket(`ws://${window.location.host}/ws/notifyFR/`);
+const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/`);
 let csrftoken;
 
 window.addEventListener("load", () => {
     const chats = document.querySelectorAll(".chatBox");
     const FRs = document.querySelectorAll(".contacts .friendRequest");
-    const msgTextBox = document.querySelector(".entryField");
-    const ACTextBox = document.querySelector(".addContactPopUp .container .input");
+    const msgBoxes = document.querySelectorAll(".msgBox");
+    const contacts = document.querySelectorAll(".contact");
+    const ACTextBox = document.querySelector(".addContactPopUp .container .FRInput");
     const friendBtn = document.querySelector(".dashboardContainer .sidebar .reflectionProfile .profileConfigs .friendBtn");
     const exitfriendBtn = document.querySelector(".addContactPopUp .exitBtn");
     const submitRequestBtn = document.querySelector(".addContactPopUp .container .submitBtn");
     csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
-    fixChats();
     chats.forEach((chat) => {
         chat.scrollTop = chat.scrollHeight;
+    });
+    msgBoxes.forEach((msgBox) => {
+        const inputField = msgBox.querySelector(".typeBox")
+        inputField.addEventListener("keydown", msgKeyPressed);
     });
 
     FRs.forEach((fr) => {
@@ -24,7 +29,14 @@ window.addEventListener("load", () => {
         rejectBtn.addEventListener("click", rejectFR);
     });
 
-    msgTextBox.addEventListener("keydown", msgKeyPressed);
+    contacts.forEach((contact) => {
+        if (!contact.classList.contains("friendRequest") && !contact.classList.contains("profileOfContact")){
+            contact.addEventListener("click", chatSelected);
+        }
+    });
+
+    //fixChats();
+
     friendBtn.addEventListener("click", toggleAddContact);
     ACTextBox.addEventListener("keydown", ACkeyPressed);
     exitfriendBtn.addEventListener("click", toggleAddContact);
@@ -32,7 +44,7 @@ window.addEventListener("load", () => {
 });
 
 function fixChats(){
-    const receiverMessages = document.querySelectorAll(".receiver .contact .message");
+    const receiverMessages = document.querySelectorAll(".receiver");
 
     receiverMessages.forEach((message) => {
         const messageProps = message.getBoundingClientRect();
@@ -60,12 +72,14 @@ function ACkeyPressed(event){
 }
 
 function toggleAddContact(){
-    const popup = document.querySelector(".addContactPopUp")
+    const popup = document.querySelector(".addContactPopUp");
     const msg = document.querySelector(".addContactPopUp .container .msg");
+    const inputField = popup.querySelector(".container .FRInput");
     if (popup.style.display == "block"){
         popup.style.display = "none";
         msg.style.display = "none";
         msg.innerText = "";
+        inputField.value = "";
     }
     else{
         popup.style.display = "block";    
@@ -75,7 +89,7 @@ function toggleAddContact(){
 let debug = false
 function addContact(){
     if (!debug){
-        const userToAdd = document.querySelector(".addContactPopUp .container .input");
+        const userToAdd = document.querySelector(".addContactPopUp .container .FRInput");
         if (userToAdd != ""){
             debug = true;
             const msg = document.querySelector(".addContactPopUp .container .msg");
@@ -110,7 +124,7 @@ function addContact(){
                                 msg.innerText = infoMsg;
                                 foundResponse = true;
                                 
-                                frSocket.send(JSON.stringify({requestID:reqID}));
+                                frSocket.send(JSON.stringify({requestID:reqID, type:"sendFR"}));
 
                             } else if (!foundResponse) {
                                 msg.innerText = "Something went wrong.";
@@ -127,11 +141,20 @@ function addContact(){
 }
 
 frSocket.onmessage = function(event) {
-    displayFR(event);
+    const requestData = JSON.parse(event.data);
+    if (requestData.type == "fr.notifier"){
+        displayFR(requestData);
+    }
 }
 
-function displayFR(event){
-    const requestDetails = JSON.parse(event.data);
+chatSocket.onmessage = function(event) {
+    const requestData = JSON.parse(event.data);
+    if (requestData.type == "chat.create"){ 
+        createChat(requestData);
+    }
+}
+
+function displayFR(requestData){
     const contactList = document.querySelector(".contacts");
     const template = document.querySelector(".FRTemplate");
 
@@ -140,13 +163,13 @@ function displayFR(event){
 
     const requestIDs = FRDiv.querySelectorAll(".requestID");
     requestIDs.forEach((request) => {
-        request.innerText = requestDetails.requestID;
+        request.innerText = requestData.requestID;
     })
 
     const sender = FRDiv.querySelector(".contactUsername");
-    sender.innerText = requestDetails.sender;
+    sender.innerText = requestData.sender;
 
-    const senderID = requestDetails.senderID;
+    const senderID = requestData.senderID;
 
     const profile = FRDiv.querySelector("img");
     profile.src = `/uploads/profiles/user_${senderID}.jpeg`
@@ -194,10 +217,123 @@ function acceptFR(){
             // If chat created, reflect changes
             if (statusCode == 201){
                 frDiv.remove();
-                console.log(`Response: ${response}`)
-                console.log(`Encryption Key = ${response.cryptkey}`);
+                console.log(`Encryption Key = ${response.cryptKey}`);
+                console.log(`iv = ${response.iv}`);
+                // Send message to websocket to display to other user
+                createChat(response);
+                chatSocket.send(JSON.stringify({chatID:response.chatID, type:"createChat"}));
             }
         })
+}
+
+function createChat(chatData){
+    // Create a client side chat
+    // Latest Message stays hidden till decrypted
+    const contactList = document.querySelector(".contacts");
+    const template = document.querySelector(".contactTemplate");
+
+    const tempDup = template.cloneNode(true);
+    const contactDIV = tempDup.content.querySelector(".contact");
+
+    let chatID = contactDIV.querySelector(".chatID");
+    chatID.innerText = chatData.chatID;
+
+    let sender = contactDIV.querySelector(".contactUsername");
+    sender.innerText = chatData.username;
+
+    const senderID = chatData.sender;
+
+    let profile = contactDIV.querySelector("img");
+    profile.src = `/uploads/profiles/user_${senderID}.jpeg`
+
+    contactList.appendChild(contactDIV);
+
+    const msgBoxTemp = document.querySelector(".msgBoxTemplate");
+
+    const msgBoxTempDup = msgBoxTemp.cloneNode(true);
+    const msgBox = msgBoxTempDup.content.querySelector(".msgBox");
+
+    chatID = msgBox.querySelector(".details .chatID")
+    chatID.innerText = chatData.chatID;
+
+    sender = msgBox.querySelector(".msgTopBar .contact .contactUsername");
+    sender.innerText = chatData.username;
+
+    profile = msgBox.querySelector(".msgTopBar .contact img");
+    profile.src = `/uploads/profiles/user_${senderID}.jpeg`
+
+    const cryptKey = msgBox.querySelector(".details .cryptKey");
+    cryptKey.innerText = chatData.cryptKey;
+    
+    const iv = msgBox.querySelector(".details .iv");
+    iv.innerText = chatData.iv;
+
+    const dashboardContainer = document.querySelector(".dashboardContainer");
+
+    dashboardContainer.appendChild(msgBox);
+    // add event listeners to the MsgBox divs
+
+    contactDIV.addEventListener("click", chatSelected);
+    
+}
+
+let selectedChat = "";
+
+function chatSelected(){
+    const chatID = this.querySelector(".chatID").innerText;
+    const dashboardContainer = document.querySelector(".dashboardContainer");
+    const dummyMsgBox = document.querySelector(".dummyMsgBox");
+    const welcomeMsg = document.querySelector(".welcomeMsg");
+
+    if (selectedChat == ""){
+
+        const msgBoxes = document.querySelectorAll(".dashboardContainer .msgBox");
+        let contactsMsgBox;
+
+        msgBoxes.forEach((msgBox) => {
+            const boxChatID = msgBox.querySelector(".details .chatID").innerText;
+            if (chatID == boxChatID){
+                contactsMsgBox = msgBox;
+            }
+        });
+        
+        dashboardContainer.appendChild(contactsMsgBox);
+        contactsMsgBox.style.display = "block";
+
+        dummyMsgBox.style.display = "none";
+        welcomeMsg.style.display = "none";
+
+        selectedChat = chatID;
+        this.classList.add("active");
+        // Add .selected class to the contact and display the relevant chat
+    } else if (selectedChat == chatID){
+        // Hide the msg box and remove selected class off of it
+
+        const msgBoxes = document.querySelectorAll(".dashboardContainer .msgBox");
+        let contactsMsgBox;
+
+        msgBoxes.forEach((msgBox) => {
+            const boxChatID = msgBox.querySelector(".details .chatID").innerText;
+            if (chatID == boxChatID){
+                contactsMsgBox = msgBox;
+            }
+        });
+
+        contactsMsgBox.style.display = "none";
+        this.classList.remove("active");
+
+        dummyMsgBox.style.display = "block";
+        welcomeMsg.style.display = "block";
+
+        selectedChat = "";
+    }
+    //WHAT HAPPENS WHEN THERE IS A CHAT SELECTED?
+    /* Do this when selected
+
+    const dummyMsgBox = document.querySelector(".dummyMsgBox");
+    dummyMsgBox.style.display = 'none'
+    */
+    // Remove .active class on any other chat and hide their 
 }
 
 function sendMessage(){
