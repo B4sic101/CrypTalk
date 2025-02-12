@@ -407,20 +407,14 @@
     background: #005593;
 }
 
-.typeBox {
+.entryField {
     display: flex;
-    overflow: hidden;
-    width: 100%;
-    height: 9.4vh;
-    background: #313131;
-}
-
-.typeBox .entryField {
     align-items: center;
     position: relative;
     margin: auto;
-    width: 90%;
+    width: 100%;
     height: 60%;
+    padding: 1vh;
     overflow-y: auto;
     border: none;
     overflow: auto;

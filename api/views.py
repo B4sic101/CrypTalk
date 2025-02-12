@@ -28,6 +28,8 @@ def addContact(request):
                             if not chat.objects.filter(sender=request.user.userID).exists():
                                 newFR = friendRequest.objects.create(receiver=validSer['receiver'], sender=request.user.userID)
 
+                                print("data: " + str(newFR))
+                                print("request id: " + str(newFR.requestID))
                                 newFR.save()
 
                                 return Response({'msg':'Friend request sent.', 'requestID':f'{newFR.requestID}'}, status=201)

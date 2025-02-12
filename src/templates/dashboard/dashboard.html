@@ -8,6 +8,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'dashboard/main/main.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="{% static 'dashboard/main/main.js' %}"></script>
     <script src="https://kit.fontawesome.com/c970b059ac.js" crossorigin="anonymous"></script>
 </head>
@@ -116,10 +117,8 @@
                     </div>
                 </div>
             </div>
-            <form type="POST" class="typeBox">
-                <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
-                <button></button>
-            </form>
+            <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
+            <button class="msgBtn"></button>
         </div>
 
         <template class="msgBoxTemplate">
@@ -146,10 +145,8 @@
     
                 <div class="chatBox">
                 </div>
-                <form type="POST" class="typeBox">
-                    <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
-                    <button></button>
-                </form>
+                <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
+                <button class="msgBtn"></button>
             </div>
         </template>
     </div>

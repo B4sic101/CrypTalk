@@ -1,6 +1,6 @@
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
-from api.models import friendRequest, chat
+from api.models import friendRequest, chat, ChatLine
 from src.models import User
 import json
 
@@ -72,6 +72,7 @@ class ChatConsumer(WebsocketConsumer):
         jData = json.loads(text_data)
 
         if jData["type"] == "createChat":
+            # check if the chat exists?
             chatID = jData["chatID"]
             fetchedChat = chat.objects.get(chatID=chatID)
             userid_to_send = fetchedChat.sender
@@ -99,10 +100,50 @@ class ChatConsumer(WebsocketConsumer):
                 print("Succesfully sent message to group")
             except Exception as e:
                 print(f"ERROR: {e}")
+        elif jData["type"] == "sendMsg":
+            sendingUser = self.scope["user"].userID
+
+            print("t1")
+            if chat.objects.filter(chatID=jData["chatID"]).exists():
+                chatToSend = chat.objects.get(chatID=jData["chatID"])
+                print("t2")
+
+                if chatToSend.sender == sendingUser or chatToSend.receiver == sendingUser:
+                    print("t3")
+                    targetGrp = ''
+                    if chatToSend.sender == sendingUser:
+                        targetGrp = f'user_{chatToSend.receiver}'
+                    else:
+                        targetGrp = f'user_{chatToSend.sender}'
+                    print(f"t4: {targetGrp}")
+
+                    message = ChatLine.objects.create(chatID=chatToSend.chatID, sender=sendingUser, content=jData['cipher_text'])
+
+                    try:
+                        async_to_sync(
+                            self.channel_layer.group_send)(
+                            targetGrp,
+                            {
+                                'type': 'chat.send.message',
+                                'chatID': f'{message.chatID}',
+                                'cipher_text': f'{message.content}',
+                            }
+                            )
+                        print("Succesfully sent message to group")
+                    except Exception as e:
+                        print(f"ERROR: {e}")
+
             
     def chat_create(self, text_data):
         try:
             async_to_sync(self.send(text_data=json.dumps(text_data)))
             print("Chat updated on receiving user's end")
+        except Exception as e:
+            print(f"ERROR: {e}")
+        
+    def chat_send_message(self, text_data):
+        try:
+            async_to_sync(self.send(text_data=json.dumps(text_data)))
+            print(f"Sent message to user {self.scope["user"].username}")
         except Exception as e:
             print(f"ERROR: {e}")

@@ -6,7 +6,6 @@ let csrftoken;
 window.addEventListener("load", () => {
     const chats = document.querySelectorAll(".chatBox");
     const FRs = document.querySelectorAll(".contacts .friendRequest");
-    const msgBoxes = document.querySelectorAll(".msgBox");
     const contacts = document.querySelectorAll(".contact");
     const ACTextBox = document.querySelector(".addContactPopUp .container .FRInput");
     const friendBtn = document.querySelector(".dashboardContainer .sidebar .reflectionProfile .profileConfigs .friendBtn");
@@ -16,14 +15,6 @@ window.addEventListener("load", () => {
 
     chats.forEach((chat) => {
         chat.scrollTop = chat.scrollHeight;
-    });
-
-    msgBoxes.forEach((msgBox) => {
-        const inputField = msgBox.querySelector(".typeBox");
-        const msgBoxChatID = msgBox.querySelector(".chatID").innerText;
-        //inputField.addEventListener("keydown", msgKeyPressed);
-        
-        let statusCode;
     });
 
     FRs.forEach((fr) => {
@@ -54,7 +45,6 @@ window.addEventListener("load", () => {
         }
     });
 
-
     friendBtn.addEventListener("click", toggleAddContact);
     ACTextBox.addEventListener("keydown", ACkeyPressed);
     exitfriendBtn.addEventListener("click", toggleAddContact);
@@ -65,8 +55,12 @@ function msgKeyPressed(event){
     const key = event.key;
     if (key == "Enter"){
         event.preventDefault();
-        self.innerText = "";
-        sendMessage();
+        const msgBox = this.parentElement
+        const chatID = msgBox.querySelector(".details .chatID").innerText;
+        const chatObj = activeChats[chatID];
+        if (chatObj !== undefined){
+            chatObj.sendMessage(this, msgBox);
+        }
     };
 }
 
@@ -160,6 +154,12 @@ chatSocket.onmessage = function(event) {
         if (activeChats[requestData.chatID] == undefined){
             newChat = new Chat(requestData, "fr");
             activeChats[requestData.chatID] = newChat;
+        }
+    }
+    if (requestData.type == "chat.send.message"){
+        const chatObj = activeChats[requestData.chatID];
+        if (chatObj !== undefined){
+            chatObj.receivedMessage(requestData);
         }
     }
 }
@@ -280,12 +280,6 @@ class Chat{
         const profile = msgBox.querySelector(".msgTopBar .contact img");
         profile.src = `/uploads/profiles/user_${senderID}.jpeg`
 
-        const cryptKey = msgBox.querySelector(".details .cryptKey");
-        cryptKey.innerText = chatData.cryptKey;
-        
-        const iv = msgBox.querySelector(".details .iv");
-        iv.innerText = chatData.iv;
-
         if (this.contactDIV == undefined){
             const contacts = document.querySelectorAll(".contact");
         
@@ -309,7 +303,36 @@ class Chat{
     
         dashboardContainer.appendChild(msgBox);
     
-        this.#_contactDIV.addEventListener("click", chatSelected); 
+        this.#_contactDIV.addEventListener("click", chatSelected);
+        
+        const msgBoxes = document.querySelectorAll(".dashboardContainer .msgBox");
+        msgBoxes.forEach((msgBox) => {
+            if (!msgBox.classList.contains("dummyMsgBox")){
+                const inputField = msgBox.querySelector(".entryField");
+                inputField.addEventListener("keydown", msgKeyPressed);
+            }
+        });
+    }
+
+    sendMessage(inputField, msgBox){
+        // Send message here
+        const chatID = msgBox.querySelector(".details .chatID").innerText;
+        const chatObj = activeChats[chatID];
+        
+        // encryption
+        const plainText = inputField.value;
+        const cryptKey = chatObj.cryptKey;
+        const iv = chatObj.iv;
+    
+        const cipherText = CryptoJS.AES.encrypt(plainText, cryptKey, {iv: iv});
+
+        chatSocket.send(JSON.stringify({chatID:chatID, cipher_text:`${cipherText}`, type:"sendMsg"}));
+        console.log("Sent message");
+    };
+
+    receivedMessage(messageData){
+        console.log(`Got the Message: ${messageData['cipher_text']}`)
+        //access msg box of chat and wipe the input field
     }
 
     get username() {
@@ -374,7 +397,6 @@ function chatSelected(){
         debug = true;
     } else if (selectedChat !== chatID) {
         // Switch selected chat
-        console.log(`Chats: ${Object.keys(activeChats)}`);
 
         const currentActiveChat = activeChats[selectedChat];
         const currentActiveChatContact = currentActiveChat.contactDIV;
@@ -389,10 +411,6 @@ function chatSelected(){
         debug = true;
     }
 }
-
-function sendMessage(){
-    // Send message here
-};
 
 /* CONDITIIONS TO SEND AN INPUT FROM ENTRY FIELD:
     - Is a current contact selected?
