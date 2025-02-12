@@ -53,21 +53,12 @@
                 </template>
 
                 {% for chat in chats %}
-                    {% if chat.whoami == 'sender' %}
-                        <div class="contact">
-                            <div class="chatID">{{ chat.chatID }}</div>
-                            <img src="/uploads/profiles/user_{{ chat.receiver }}.jpeg">
-                            <div class="contactUsername">{{ chat.receiverUsername }}</div>
-                            <div class="latestMessage">{{ chat.latest_message }}</div>
-                        </div>
-                    {% else %}
-                        <div class="contact">
-                            <div class="chatID">{{ chat.chatID }}</div>
-                            <img src="/uploads/profiles/user_{{ chat.sender }}.jpeg">
-                            <div class="contactUsername">{{ chat.senderUsername }}</div>
-                            <div class="latestMessage">{{ chat.latest_message }}</div>
-                        </div>
-                    {% endif %}
+                    <div class="contact">
+                        <div class="chatID">{{ chat.chatID }}</div>
+                        <img src="/uploads/profiles/user_{{ chat.sender }}.jpeg">
+                        <div class="contactUsername">{{ chat.username }}</div>
+                        <div class="latestMessage">{{ chat.latest_message }}</div>
+                    </div>
                 {% endfor %}
 
 
@@ -93,92 +84,6 @@
             </div>
         </div>
 
-        {% for chat in chats %}
-            {% if chat.whoami == 'sender' %}
-                <div class="msgBox">
-                    <div class="details">
-                        <div class="chatID details">{{ chat.chatID }}</div>
-                        <div class="cryptKey details">{{ chat.crypt_key }}</div>
-                        <div class="iv details">{{ chat.iv }}</div>
-                    </div>
-                    <div class="msgTopBar">
-                        <div class="contact profileOfContact">
-                            <img src="/uploads/profiles/user_{{ chat.receiver }}.jpeg">
-                            <div class="contactUsername contactInfo">{{ chat.receiverUsername }}</div>
-                            <div class="contactStatus contactInfo"></div>
-                        </div>
-                        <div class="appInfo">
-                            <div class="appInfo fa-solid fa-lock"></div>
-                            <div class="appInfo appVersion">V0.5.0 BETA</div>
-                            <div class="appInfo encryptionInfo">AES-256 Encryption</div>
-                        </div>
-                    </div>
-        
-                    <!-- Chat Box -->
-                    <div class="chatBox"></div>
-                    <form type="POST" class="typeBox">
-                        <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
-                        <button></button>
-                    </form>
-                </div>
-            {% else %}
-                <div class="msgBox">
-                    <div class="details">
-                        <div class="chatID details">{{ chat.chatID }}</div>
-                        <div class="cryptKey details">{{ chat.crypt_key }}</div>
-                        <div class="iv details">{{ chat.iv }}</div>
-                    </div>
-                    <div class="msgTopBar">
-                        <div class="contact profileOfContact">
-                            <img src="/uploads/profiles/user_{{ chat.sender }}.jpeg">
-                            <div class="contactUsername contactInfo">{{ chat.senderUsername }}</div>
-                            <div class="contactStatus contactInfo"></div>
-                        </div>
-                        <div class="appInfo">
-                            <div class="appInfo fa-solid fa-lock"></div>
-                            <div class="appInfo appVersion">V0.5.0 BETA</div>
-                            <div class="appInfo encryptionInfo">AES-256 Encryption</div>
-                        </div>
-                    </div>
-        
-                    <!-- Chat Box -->
-                    <ul class="chatBox">
-                        <li class="sender messageBlock">
-                            <div class="contact">
-                                <div class="message contactInfo">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Provident iure, tempore molestias ducimus inventore porro reiciendis itaque. Eveniet nulla dolorem hic. Et mollitia cumque, ipsam ducimus earum ut! Possimus, iste!<div class="time contactInfo">10:02 AM</div></div>
-                            </div>
-                        </li>
-                        <li class="receiver messageBlock">
-                            <div class="contact">
-                                <div class="message contactInfo">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt asperiores velit magni, id laborum laudantium minima, a, consectetur voluptate incidunt eos laboriosam porro veniam fugiat tenetur ratione repudiandae quisquam. Explicabo?<div class="time contactInfo">3:02 AM</div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="sender messageBlock">
-                            <div class="contact">
-                                <div class="message contactInfo">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Provident iure, tempore molestias ducimus inventore porro reiciendis itaque. Eveniet nulla dolorem hic. Et mollitia cumque, ipsam ducimus earum ut! Possimus, iste!<div class="time contactInfo">10:02 AM</div></div>
-                            </div>
-                        </li>
-                        <li class="sender messageBlock">
-                            <div class="contact">
-                                <div class="message contactInfo">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Provident iure, tempore molestias ducimus inventore porro reiciendis itaque. Eveniet nulla dolorem hic. Et mollitia cumque, ipsam ducimus earum ut! Possimus, iste!<div class="time contactInfo">10:02 AM</div></div>
-                            </div>
-                        </li>
-                        <li class="receiver messageBlock">
-                            <div class="contact">
-                                <div class="message contactInfo">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt asperiores velit magni, id laborum laudantium minima, a, consectetur voluptate incidunt eos laboriosam porro veniam fugiat tenetur ratione repudiandae quisquam. Explicabo?<div class="time contactInfo">3:02 AM</div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <form type="POST" class="typeBox">
-                        <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
-                        <button></button>
-                    </form>
-                </div>
-            {% endif %}
-        {% endfor %}
-
         <div class="msgBox dummyMsgBox">
             <div class="details">
                 <div class="chatID details"></div>
@@ -201,12 +106,12 @@
             <!-- Chat Box -->
             <div class="chatBox">
                 <div class="sender messageBlock">
-                    <div class="contact">
+                    <div class="contact partOfMessage">
                         <div class="message contactInfo">Its all working great now.<div class="time contactInfo">10:02 AM</div></div>
                     </div>
                 </div>
                 <div class="receiver messageBlock">
-                    <div class="contact">
+                    <div class="contact partOfMessage">
                         <div class="message contactInfo"> No problem!<div class="time contactInfo">3:02 AM</div></div>
                     </div>
                 </div>

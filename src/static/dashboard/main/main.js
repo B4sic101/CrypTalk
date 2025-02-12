@@ -1,5 +1,6 @@
 const frSocket = new WebSocket(`ws://${window.location.host}/ws/notifyFR/`);
 const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/`);
+var activeChats = {};
 let csrftoken;
 
 window.addEventListener("load", () => {
@@ -16,9 +17,13 @@ window.addEventListener("load", () => {
     chats.forEach((chat) => {
         chat.scrollTop = chat.scrollHeight;
     });
+
     msgBoxes.forEach((msgBox) => {
-        const inputField = msgBox.querySelector(".typeBox")
-        inputField.addEventListener("keydown", msgKeyPressed);
+        const inputField = msgBox.querySelector(".typeBox");
+        const msgBoxChatID = msgBox.querySelector(".chatID").innerText;
+        //inputField.addEventListener("keydown", msgKeyPressed);
+        
+        let statusCode;
     });
 
     FRs.forEach((fr) => {
@@ -30,12 +35,25 @@ window.addEventListener("load", () => {
     });
 
     contacts.forEach((contact) => {
-        if (!contact.classList.contains("friendRequest") && !contact.classList.contains("profileOfContact")){
-            contact.addEventListener("click", chatSelected);
+        if (contact.parentElement.classList.contains("contacts") && !contact.classList.contains("friendRequest")){
+            
+            const chatID = contact.querySelector(".chatID").innerText;
+            if (activeChats[chatID] == undefined){
+                let statusCode;
+                    fetch(`/api/getChatDetails?chatID=${chatID}`)
+                        .then(data => {
+                            statusCode = data.status;
+                            return data.json()})
+                        .then(post => {
+                            if (statusCode == 200){
+                                newChat = new Chat(post, "createChat");
+                                activeChats[post.chatID] = newChat;
+                            }
+                        })
+            }
         }
     });
 
-    //fixChats();
 
     friendBtn.addEventListener("click", toggleAddContact);
     ACTextBox.addEventListener("keydown", ACkeyPressed);
@@ -43,22 +61,11 @@ window.addEventListener("load", () => {
     submitRequestBtn.addEventListener("click", addContact);
 });
 
-function fixChats(){
-    const receiverMessages = document.querySelectorAll(".receiver");
-
-    receiverMessages.forEach((message) => {
-        const messageProps = message.getBoundingClientRect();
-        const originWidth = messageProps.width;
-        
-        message.style.minWidth = `${originWidth}px`;
-        message.parentElement.parentElement.style.marginLeft = `${90}%`;
-    });
-};
-
 function msgKeyPressed(event){
     const key = event.key;
     if (key == "Enter"){
         event.preventDefault();
+        self.innerText = "";
         sendMessage();
     };
 }
@@ -149,8 +156,11 @@ frSocket.onmessage = function(event) {
 
 chatSocket.onmessage = function(event) {
     const requestData = JSON.parse(event.data);
-    if (requestData.type == "chat.create"){ 
-        createChat(requestData);
+    if (requestData.type == "chat.create"){
+        if (activeChats[requestData.chatID] == undefined){
+            newChat = new Chat(requestData, "fr");
+            activeChats[requestData.chatID] = newChat;
+        }
     }
 }
 
@@ -214,67 +224,117 @@ function acceptFR(){
             return data.json();
         })
         .then(response => {
-            // If chat created, reflect changes
             if (statusCode == 201){
                 frDiv.remove();
-                console.log(`Encryption Key = ${response.cryptKey}`);
-                console.log(`iv = ${response.iv}`);
-                // Send message to websocket to display to other user
-                createChat(response);
+
+                const newChat = new Chat(response, "fr");
+                activeChats[response.chatID] = newChat;
+
                 chatSocket.send(JSON.stringify({chatID:response.chatID, type:"createChat"}));
             }
         })
 }
 
-function createChat(chatData){
-    // Create a client side chat
-    // Latest Message stays hidden till decrypted
-    const contactList = document.querySelector(".contacts");
-    const template = document.querySelector(".contactTemplate");
+class Chat{
+    #_contactDIV;
+    #_chatID;
+    #_username;
+    #_cryptKey;
+    #_iv;
+    #_msgBox;
+    constructor(chatData, type){
+        if (type == "fr"){
+            const contactList = document.querySelector(".contacts");
+            const template = document.querySelector(".contactTemplate");
+        
+            const tempDup = template.cloneNode(true);
+            const contactDIV = tempDup.content.querySelector(".contact");
+        
+            let chatID = contactDIV.querySelector(".chatID");
+            chatID.innerText = chatData.chatID;
 
-    const tempDup = template.cloneNode(true);
-    const contactDIV = tempDup.content.querySelector(".contact");
+        
+            let sender = contactDIV.querySelector(".contactUsername");
+            sender.innerText = chatData.username;
+        
+            const senderID = chatData.sender;
+        
+            let profile = contactDIV.querySelector("img");
+            profile.src = `/uploads/profiles/user_${senderID}.jpeg`
+            contactList.appendChild(contactDIV);
+            this.#_contactDIV = contactDIV;
+        }
 
-    let chatID = contactDIV.querySelector(".chatID");
-    chatID.innerText = chatData.chatID;
-
-    let sender = contactDIV.querySelector(".contactUsername");
-    sender.innerText = chatData.username;
-
-    const senderID = chatData.sender;
-
-    let profile = contactDIV.querySelector("img");
-    profile.src = `/uploads/profiles/user_${senderID}.jpeg`
-
-    contactList.appendChild(contactDIV);
-
-    const msgBoxTemp = document.querySelector(".msgBoxTemplate");
-
-    const msgBoxTempDup = msgBoxTemp.cloneNode(true);
-    const msgBox = msgBoxTempDup.content.querySelector(".msgBox");
-
-    chatID = msgBox.querySelector(".details .chatID")
-    chatID.innerText = chatData.chatID;
-
-    sender = msgBox.querySelector(".msgTopBar .contact .contactUsername");
-    sender.innerText = chatData.username;
-
-    profile = msgBox.querySelector(".msgTopBar .contact img");
-    profile.src = `/uploads/profiles/user_${senderID}.jpeg`
-
-    const cryptKey = msgBox.querySelector(".details .cryptKey");
-    cryptKey.innerText = chatData.cryptKey;
+        const senderID = chatData.sender;
+        const msgBoxTemp = document.querySelector(".msgBoxTemplate");
+        
+        const msgBoxTempDup = msgBoxTemp.cloneNode(true);
+        const msgBox = msgBoxTempDup.content.querySelector(".msgBox");
     
-    const iv = msgBox.querySelector(".details .iv");
-    iv.innerText = chatData.iv;
-
-    const dashboardContainer = document.querySelector(".dashboardContainer");
-
-    dashboardContainer.appendChild(msgBox);
-    // add event listeners to the MsgBox divs
-
-    contactDIV.addEventListener("click", chatSelected);
+        const chatID = msgBox.querySelector(".details .chatID")
+        chatID.innerText = chatData.chatID;
     
+        const sender = msgBox.querySelector(".msgTopBar .contact .contactUsername");
+        sender.innerText = chatData.username;
+    
+        const profile = msgBox.querySelector(".msgTopBar .contact img");
+        profile.src = `/uploads/profiles/user_${senderID}.jpeg`
+
+        const cryptKey = msgBox.querySelector(".details .cryptKey");
+        cryptKey.innerText = chatData.cryptKey;
+        
+        const iv = msgBox.querySelector(".details .iv");
+        iv.innerText = chatData.iv;
+
+        if (this.contactDIV == undefined){
+            const contacts = document.querySelectorAll(".contact");
+        
+            contacts.forEach((contact) => {
+                if (contact.parentElement.classList.contains("contacts") && !contact.classList.contains("friendRequest")){
+                    if (contact.querySelector(".chatID").innerText == chatData.chatID){
+                        this.#_contactDIV = contact;
+                    }
+                }
+            })
+        }
+
+
+        this.#_chatID = chatData.chatID;
+        this.#_username = chatData.username;
+        this.#_cryptKey = chatData.cryptKey;
+        this.#_iv = chatData.iv;
+        this.#_msgBox = msgBox;
+    
+        const dashboardContainer = document.querySelector(".dashboardContainer");
+    
+        dashboardContainer.appendChild(msgBox);
+    
+        this.#_contactDIV.addEventListener("click", chatSelected); 
+    }
+
+    get username() {
+        return this.#_username;
+    }
+
+    get chatID() {
+        return this.#_chatID;
+    }
+
+    get cryptKey() {
+        return this.#_cryptKey;
+    }
+
+    get iv() {
+        return this.#_iv;
+    }
+
+    get msgBox() {
+        return this.#_msgBox;
+    }
+
+    get contactDIV() {
+        return this.#_contactDIV;
+    }
 }
 
 let selectedChat = "";
@@ -285,19 +345,13 @@ function chatSelected(){
     const dummyMsgBox = document.querySelector(".dummyMsgBox");
     const welcomeMsg = document.querySelector(".welcomeMsg");
 
+    const boxChatID = this.querySelector(".chatID").innerText;
+    const chatObj = activeChats[boxChatID];
+    const contactsMsgBox = chatObj.msgBox;
+
+    dashboardContainer.appendChild(contactsMsgBox);
+
     if (selectedChat == ""){
-
-        const msgBoxes = document.querySelectorAll(".dashboardContainer .msgBox");
-        let contactsMsgBox;
-
-        msgBoxes.forEach((msgBox) => {
-            const boxChatID = msgBox.querySelector(".details .chatID").innerText;
-            if (chatID == boxChatID){
-                contactsMsgBox = msgBox;
-            }
-        });
-        
-        dashboardContainer.appendChild(contactsMsgBox);
         contactsMsgBox.style.display = "block";
 
         dummyMsgBox.style.display = "none";
@@ -305,35 +359,35 @@ function chatSelected(){
 
         selectedChat = chatID;
         this.classList.add("active");
+        debug = true;
         // Add .selected class to the contact and display the relevant chat
     } else if (selectedChat == chatID){
         // Hide the msg box and remove selected class off of it
 
-        const msgBoxes = document.querySelectorAll(".dashboardContainer .msgBox");
-        let contactsMsgBox;
-
-        msgBoxes.forEach((msgBox) => {
-            const boxChatID = msgBox.querySelector(".details .chatID").innerText;
-            if (chatID == boxChatID){
-                contactsMsgBox = msgBox;
-            }
-        });
-
         contactsMsgBox.style.display = "none";
-        this.classList.remove("active");
 
         dummyMsgBox.style.display = "block";
         welcomeMsg.style.display = "block";
 
         selectedChat = "";
-    }
-    //WHAT HAPPENS WHEN THERE IS A CHAT SELECTED?
-    /* Do this when selected
+        this.classList.remove("active");
+        debug = true;
+    } else if (selectedChat !== chatID) {
+        // Switch selected chat
+        console.log(`Chats: ${Object.keys(activeChats)}`);
 
-    const dummyMsgBox = document.querySelector(".dummyMsgBox");
-    dummyMsgBox.style.display = 'none'
-    */
-    // Remove .active class on any other chat and hide their 
+        const currentActiveChat = activeChats[selectedChat];
+        const currentActiveChatContact = currentActiveChat.contactDIV;
+        const currentActiveChatMsgBox = currentActiveChat.msgBox;
+
+        currentActiveChatMsgBox.style.display = "none";
+        contactsMsgBox.style.display = "block";
+
+        currentActiveChatContact.classList.remove("active");
+        selectedChat = chatID;
+        this.classList.add("active");
+        debug = true;
+    }
 }
 
 function sendMessage(){

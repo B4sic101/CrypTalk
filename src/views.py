@@ -5,6 +5,7 @@ from api.models import friendRequest
 from api.models import chat as modelChat
 from src.models import User
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     if request.user.is_authenticated:
@@ -12,41 +13,39 @@ def index(request):
     else:    
         return render(request, "index.html")
 
+@login_required
 def dashboard(request):
-    if request.user.is_authenticated:
-        thisUserID = request.user.userID
-        userFRs = friendRequest.objects.filter(receiver=thisUserID)
-        updatedUserFRs = userFRs.values()
+    thisUserID = request.user.userID
+    userFRs = friendRequest.objects.filter(receiver=thisUserID)
+    updatedUserFRs = userFRs.values()
 
-        for fRequest in updatedUserFRs:
-            senderID = fRequest["sender"]
-            
-            userQuery = User.objects.filter(userID=senderID).values("username")
-            fRequest['senderUsername'] = userQuery[0]["username"]
+    for fRequest in updatedUserFRs:
+        senderID = fRequest["sender"]
         
-        userChats = modelChat.objects.filter(Q(sender=thisUserID) | Q(receiver=thisUserID)).values()
+        userQuery = User.objects.filter(userID=senderID).values("username")
+        fRequest['senderUsername'] = userQuery[0]["username"]
+    
+    userChats = modelChat.objects.filter(Q(sender=thisUserID) | Q(receiver=thisUserID)).values()
 
-        for chat in userChats:
-            if chat["sender"] == thisUserID:
-                chat['whoami'] = 'sender'
-                chat['receiverUsername'] = User.objects.get(userID=chat["receiver"]).username
-            else:
-                chat['whoami'] = 'receiver'
-                chat['senderUsername'] = User.objects.get(userID=chat["sender"]).username
+    for chat in userChats:
+        if chat["sender"] == thisUserID:
+            chat['username'] = User.objects.get(userID=chat["receiver"]).username
+            chat['sender'] = chat["receiver"]
+        else:
+            chat['username'] = User.objects.get(userID=chat["sender"]).username
 
-        # Latest message must change to You if there is a message and if the message was sent by sender or receiver, must cut the part out and change it adaquetly.
-        
-        userData = {
-                "username" : request.user.username,
-                "userID" : thisUserID,
-                "profileimage" : f"/uploads/profiles/user_{thisUserID}.jpeg",
-                "friendRequests" : updatedUserFRs,
-                "chats": userChats,
-        }
+    # Latest message must change to You if there is a message and if the message was sent by sender or receiver, must cut the part out and change it adaquetly.
+    
+    userData = {
+            "username" : request.user.username,
+            "userID" : thisUserID,
+            "profileimage" : f"/uploads/profiles/user_{thisUserID}.jpeg",
+            "friendRequests" : updatedUserFRs,
+            "chats": userChats,
+    }
 
-        return render(request, "dashboard/dashboard.html", context=userData)
-    else:
-        return redirect("index")
+    return render(request, "dashboard/dashboard.html", context=userData)
+
 
 def loginView(request):
     if request.user.is_authenticated:
@@ -87,7 +86,7 @@ def registerView(request):
         context = {"registerform": form}
         return render(request, 'authentication/register.html', context)
 
+@login_required
 def logout_user(request):
-    if request.user.is_authenticated:
-        logout(request)
+    logout(request)
     return redirect("index")

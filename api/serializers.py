@@ -13,4 +13,6 @@ class FRreceivingSerializer(serializers.Serializer):
 class getUserIDSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=20)
 
+class getChatDetailsSerializer(serializers.Serializer):
+    chatID = serializers.UUIDField(default = uuid4)
 

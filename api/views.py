@@ -1,8 +1,10 @@
 from src.models import User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from api.serializers import FRSerializer, getUserIDSerializer, FRreceivingSerializer
+from api.serializers import *
 from api.models import friendRequest, chat
+from django.forms.models import model_to_dict
+from django.core import serializers
 
 from secrets import token_bytes
 from base64 import b64encode
@@ -87,7 +89,7 @@ def acceptFR(request):
         else:
             username = User.objects.get(userID=newChat.receiver).username
 
-        data = {'cryptKey': encryptionKey, 'iv': genIV, 'chatID': newChat.chatID, 'receiver': newChat.receiver, 'sender': newChat.sender, 'username': username}
+        data = {'cryptKey': encryptionKey, 'iv': genIV, 'chatID': newChat.chatID, 'sender': newChat.sender, 'username': username}
         return Response(data, status=201)
     return Response(status=403)
 
@@ -104,3 +106,32 @@ def frRequestChecker(request):
                 if fr.receiver == request.user.userID:
                     return fr
     return None
+
+@api_view(['GET'])
+def getChatDetails(request):
+    serializer = getChatDetailsSerializer(data=request.query_params)
+
+    if serializer.is_valid():
+        if request.user.is_authenticated:
+            if serializer is not None:
+                validSer = serializer.validated_data
+                chat_obj = chat.objects.get(chatID=validSer["chatID"])
+                chatID = validSer["chatID"]
+                
+
+                if chat.objects.filter(chatID=chatID, sender=request.user.userID).exists() or chat.objects.filter(chatID=chatID, receiver=request.user.userID).exists():
+
+                    sender = ""
+                    username = ""
+                    if request.user.userID == chat_obj.receiver:
+                        username = User.objects.get(userID=chat_obj.sender).username
+                        sender = User.objects.get(userID=chat_obj.sender).userID
+                    else:
+                        username = User.objects.get(userID=chat_obj.receiver).username
+                        sender = User.objects.get(userID=chat_obj.receiver).userID
+                    
+                    jData = {'cryptKey': chat_obj.crypt_key, 'iv': chat_obj.iv, 'chatID': chat_obj.chatID, 'sender': sender, 'username': username}
+                    
+                    return Response(jData, status=200)
+    
+    return Response(status=403)

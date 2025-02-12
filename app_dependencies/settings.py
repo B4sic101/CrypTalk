@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'daphne',
     'channels',
     'rest_framework',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -86,6 +87,8 @@ ASGI_APPLICATION = 'app_dependencies.asgi.application'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = (3600 * 24) * 30
+
+LOGIN_URL = '/login'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

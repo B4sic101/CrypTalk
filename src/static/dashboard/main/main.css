@@ -129,7 +129,6 @@
     opacity: 60%;
     font-size: 1.5vh;
     bottom: 3.4vh;
-    display: none;
 }
 
 .friendRequest {
@@ -372,12 +371,19 @@
     background: #4D4D4D;
     color: white;
     padding: 1.2vh;
+    padding-top: .6vh;
     padding-right: 1.5vh;
     padding-bottom: .2vh;
     word-wrap: break-word;
     border-radius: 2.5vh 2.5vh 2.5vh 0vh; 
     overflow-x: none;
     float: left;
+}
+
+.receiver {
+    margin-right: 0%;
+    margin-left: 50%;
+    float: right;
 }
 
 .messageBlock .contact .message .messageContent{
@@ -392,13 +398,6 @@
     margin-bottom: 1vh;
     font-size: 1.5vh;
     color: #999;
-}
-
-
-.receiver {
-    margin-right: 0%;
-    margin-left: 50%;
-    float: right;
 }
 
 .receiver .contact .message {
