@@ -1,6 +1,7 @@
 const frSocket = new WebSocket(`ws://${window.location.host}/ws/notifyFR/`);
 const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/`);
 var activeChats = {};
+var pendingMessages = {};
 let csrftoken;
 
 window.addEventListener("load", () => {
@@ -55,11 +56,12 @@ function msgKeyPressed(event){
     const key = event.key;
     if (key == "Enter"){
         event.preventDefault();
-        const msgBox = this.parentElement
+        const msgBox = this.parentElement.parentElement;
         const chatID = msgBox.querySelector(".details .chatID").innerText;
         const chatObj = activeChats[chatID];
+        
         if (chatObj !== undefined){
-            chatObj.sendMessage(this, msgBox);
+            chatObj.sendMessage(this);
         }
     };
 }
@@ -156,10 +158,16 @@ chatSocket.onmessage = function(event) {
             activeChats[requestData.chatID] = newChat;
         }
     }
-    if (requestData.type == "chat.send.message"){
+    else if (requestData.type == "chat.send.message"){
         const chatObj = activeChats[requestData.chatID];
         if (chatObj !== undefined){
-            chatObj.receivedMessage(requestData);
+            chatObj.displayMessage(requestData, "receivedMsg");
+        }
+    }
+    else if (requestData.type == "chat.confirm.message"){
+        const chatObj = activeChats[requestData.chatID]
+        if (chatObj !== undefined){
+            chatObj.confirmMessageSent(requestData);
         }
     }
 }
@@ -298,7 +306,7 @@ class Chat{
         this.#_cryptKey = chatData.cryptKey;
         this.#_iv = chatData.iv;
         this.#_msgBox = msgBox;
-    
+        
         const dashboardContainer = document.querySelector(".dashboardContainer");
     
         dashboardContainer.appendChild(msgBox);
@@ -308,32 +316,121 @@ class Chat{
         const msgBoxes = document.querySelectorAll(".dashboardContainer .msgBox");
         msgBoxes.forEach((msgBox) => {
             if (!msgBox.classList.contains("dummyMsgBox")){
-                const inputField = msgBox.querySelector(".entryField");
+                const inputField = msgBox.querySelector(".entryFieldDiv .entryField");
                 inputField.addEventListener("keydown", msgKeyPressed);
             }
         });
     }
 
-    sendMessage(inputField, msgBox){
-        // Send message here
-        const chatID = msgBox.querySelector(".details .chatID").innerText;
-        const chatObj = activeChats[chatID];
+    sendMessage(inputField){
+        const chatID = this.#_chatID;
         
-        // encryption
         const plainText = inputField.value;
-        const cryptKey = chatObj.cryptKey;
-        const iv = chatObj.iv;
+        const iv = this.#_iv;
+        const cryptKey = this.#_cryptKey;
     
         const cipherText = CryptoJS.AES.encrypt(plainText, cryptKey, {iv: iv});
 
+        if (pendingMessages[chatID] == undefined){
+            pendingMessages[chatID] = [cipherText];
+        }
+        else {
+            pendingMessages[chatID].push(cipherText);
+        }
+
+        console.log(`cryptkey: ${cipherText.key}, iv: ${cipherText.iv}, ciphertext: ${cipherText.ciphertext}`);
+
         chatSocket.send(JSON.stringify({chatID:chatID, cipher_text:`${cipherText}`, type:"sendMsg"}));
+
         console.log("Sent message");
     };
 
-    receivedMessage(messageData){
-        console.log(`Got the Message: ${messageData['cipher_text']}`)
-        //access msg box of chat and wipe the input field
+    confirmMessageSent(messageData){
+        const chatMessages = pendingMessages[messageData.chatID];
+        const msgIndex = chatMessages.indexOf(messageData.cipher_text);
+        delete pendingMessages[msgIndex];
+        // decrypt cipherText, fetch chat obj encryption keys and iv
+
+        this.displayMessage(messageData, "confirmMsg");
     }
+
+    displayMessage(messageData, type){
+        // Should be called after
+        const iv = this.#_iv;
+        const cryptKey = this.#_cryptKey;
+        const cipherText = messageData.cipher_text;
+
+        const cipherToplainText = CryptoJS.AES.decrypt(cipherText, cryptKey, {iv: iv});
+        const userMessage = cipherToplainText.toString(CryptoJS.enc.Utf8);
+
+        const chatBox = this.#_msgBox.querySelector(".chatBox");
+
+        console.log(messageData.time);
+        const time = (messageData.time).substr(11, 5);
+        console.log(time);
+        const convertedTime = this.tConvert(time);
+        // Check if this message's sender is the user or opposing user
+        if (type == "confirmMsg"){
+            const template = document.querySelector(".receiverMsgTemplate");
+            const tempDup = template.cloneNode(true);
+
+            const messageBlock = tempDup.content.querySelector(".messageBlock");
+
+            const messageContent = messageBlock.querySelector(".message");
+            messageContent.innerText = userMessage;
+
+            const timeTemplate = document.querySelector(".timeTemplate");
+            const timeTempDup = timeTemplate.cloneNode(true);
+            const timeDiv = timeTempDup.content.querySelector(".time");
+
+            timeDiv.innerText = convertedTime;
+
+            const inputField = this.#_msgBox.querySelector(".entryFieldDiv .entryField");
+            inputField.value = "";
+
+            messageContent.appendChild(timeDiv);
+            chatBox.appendChild(messageBlock);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        else if (type == "receivedMsg"){
+            const template = document.querySelector(".senderMsgTemplate");
+            const tempDup = template.cloneNode(true);
+
+            const messageBlock = tempDup.content.querySelector(".messageBlock");
+
+            const messageContent = messageBlock.querySelector(".message"); // FIX THE MARGIN TO ADJUST FOR CHAT SIZE
+            messageContent.innerText = userMessage;
+
+            const timeTemplate = document.querySelector(".timeTemplate");
+            const timeTempDup = timeTemplate.cloneNode(true);
+            const timeDiv = timeTempDup.content.querySelector(".time");
+
+            timeDiv.innerText = convertedTime;
+
+            const inputField = this.#_msgBox.querySelector(".entryFieldDiv .entryField");
+            inputField.value = "";
+
+            messageContent.appendChild(timeDiv);
+            chatBox.appendChild(messageBlock);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+    }
+
+    updateLatestMessage(messageData){
+
+    }
+
+    tConvert (time) { // Code taken from stackoverflow answer
+        time = time.toString().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+      
+        if (time.length > 1) {
+          time = time.slice (1);
+          time[5] = +time[0] < 12 ? 'AM' : 'PM';
+          time[0] = +time[0] % 12 || 12;
+        }
+        return time.join ('');
+      }
 
     get username() {
         return this.#_username;
@@ -411,8 +508,3 @@ function chatSelected(){
         debug = true;
     }
 }
-
-/* CONDITIIONS TO SEND AN INPUT FROM ENTRY FIELD:
-    - Is a current contact selected?
-    - Is current contact selected valid?
-*/

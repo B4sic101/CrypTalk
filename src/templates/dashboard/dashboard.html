@@ -145,13 +145,37 @@
     
                 <div class="chatBox">
                 </div>
-                <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
-                <button class="msgBtn"></button>
+                <div class="entryFieldDiv">
+                    <textarea type="text" class="entryField" placeholder="Type your message here..."></textarea>
+                    <button class="msgBtn"></button>
+                </div>
             </div>
         </template>
     </div>
     
+    <template class="senderMsgTemplate">
+        <div class="sender messageBlock">
+            <div class="details">
+                <div class="details date"></div>
+            </div>
+            <div class="contact partOfMessage">
+                <div class="message contactInfo"><div class="time contactInfo"></div></div>
+            </div>
+        </div>
+    </template>
 
+    <template class="receiverMsgTemplate">
+        <div class="receiver messageBlock">
+            <div class="details">
+                <div class="details date"></div>
+            </div>
+            <div class="contact partOfMessage">
+                <div class="message contactInfo"><div class="time contactInfo"></div></div>
+            </div>
+        </div>
+    </template>
+
+    <template class="timeTemplate"><div class="time contactInfo"></div></template>
     <!-- SETTINGS -->
     <div class="settingsContainer">
         <div class="settingsTopBar">

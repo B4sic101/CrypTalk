@@ -103,19 +103,16 @@ class ChatConsumer(WebsocketConsumer):
         elif jData["type"] == "sendMsg":
             sendingUser = self.scope["user"].userID
 
-            print("t1")
             if chat.objects.filter(chatID=jData["chatID"]).exists():
                 chatToSend = chat.objects.get(chatID=jData["chatID"])
-                print("t2")
 
                 if chatToSend.sender == sendingUser or chatToSend.receiver == sendingUser:
-                    print("t3")
-                    targetGrp = ''
-                    if chatToSend.sender == sendingUser:
+                    targetGrp = f'user_{chatToSend.sender}'
+                    userGrp = f'user_{chatToSend.receiver}'
+
+                    if chatToSend.sender == self.scope["user"].userID:
                         targetGrp = f'user_{chatToSend.receiver}'
-                    else:
-                        targetGrp = f'user_{chatToSend.sender}'
-                    print(f"t4: {targetGrp}")
+                        userGrp = f'user_{chatToSend.sender}'
 
                     message = ChatLine.objects.create(chatID=chatToSend.chatID, sender=sendingUser, content=jData['cipher_text'])
 
@@ -125,14 +122,31 @@ class ChatConsumer(WebsocketConsumer):
                             targetGrp,
                             {
                                 'type': 'chat.send.message',
-                                'chatID': f'{message.chatID}',
-                                'cipher_text': f'{message.content}',
+                                'chatID': str(message.chatID),
+                                'cipher_text':str(message.content),
+                                'time': str(message.created_at),
+                                'created_at': str(message.created_at)
                             }
                             )
                         print("Succesfully sent message to group")
                     except Exception as e:
                         print(f"ERROR: {e}")
-
+                    
+                    try:
+                        async_to_sync(
+                            self.channel_layer.group_send)(
+                            userGrp,
+                            {
+                                'type': 'chat.confirm.message',
+                                'messageID':str(message.messageID),
+                                'chatID': str(message.chatID),
+                                'cipher_text':str(message.content),
+                                'time': str(message.created_at),
+                                'created_at': str(message.created_at) 
+                            }
+                            )
+                    except Exception as e:
+                        print(f"ERROR: {e}")
             
     def chat_create(self, text_data):
         try:
@@ -145,5 +159,12 @@ class ChatConsumer(WebsocketConsumer):
         try:
             async_to_sync(self.send(text_data=json.dumps(text_data)))
             print(f"Sent message to user {self.scope["user"].username}")
+        except Exception as e:
+            print(f"ERROR: {e}")
+
+    def chat_confirm_message(self, text_data):
+        try:
+            async_to_sync(self.send(text_data=json.dumps(text_data)))
+            print(f"Confirmed message to user {self.scope["user"].username}")
         except Exception as e:
             print(f"ERROR: {e}")

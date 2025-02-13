@@ -1,6 +1,7 @@
 from django.db import models
 from uuid import uuid4
 import datetime
+from django.utils.timezone import now as timeZoneNow
 
 class friendRequest(models.Model):
     requestID = models.UUIDField(primary_key=True, unique=True, default = uuid4)
@@ -19,5 +20,5 @@ class ChatLine(models.Model):
     messageID = models.UUIDField(primary_key=True, unique=True, default = uuid4)
     chatID = models.UUIDField(default = uuid4)
     sender = models.UUIDField(default = uuid4)
-    created_at = models.DateField(default=datetime.date.today)
+    created_at = models.DateTimeField(default=timeZoneNow, max_length=25)
     content = models.TextField()
