@@ -22,6 +22,9 @@
             <div class="reflectionProfile">
                 <img src="{{ profileimage }}">
                 <h3 class="profileUsername">{{ username }}</h3>
+                <div class="details">
+                    <div class="details userID">{{ userID }}</div>
+                </div>
                 <div class="profileConfigs">
                     <form action="{% url 'logout_user' %}" method="get">
                         <button class="profileBtn logoutBtn fa-solid fa-right-from-bracket fa-lg"></button>

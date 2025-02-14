@@ -20,5 +20,5 @@ class ChatLine(models.Model):
     messageID = models.UUIDField(primary_key=True, unique=True, default = uuid4)
     chatID = models.UUIDField(default = uuid4)
     sender = models.UUIDField(default = uuid4)
-    created_at = models.DateTimeField(default=timeZoneNow, max_length=25)
-    content = models.TextField()
+    time = models.DateTimeField(default=timeZoneNow, max_length=25)
+    cipher_text = models.TextField()

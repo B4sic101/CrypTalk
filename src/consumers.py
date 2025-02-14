@@ -93,8 +93,8 @@ class ChatConsumer(WebsocketConsumer):
                         'chatID': chatID,
                         'username': receiverUsername,
                         'sender': str(receiver_user_id),
-                        'crypt_key': crypt_key,
-                        'iv': iv
+                        'cryptKey': str(crypt_key),
+                        'iv': str(iv)
                     }
                     )
                 print("Succesfully sent message to group")
@@ -114,7 +114,7 @@ class ChatConsumer(WebsocketConsumer):
                         targetGrp = f'user_{chatToSend.receiver}'
                         userGrp = f'user_{chatToSend.sender}'
 
-                    message = ChatLine.objects.create(chatID=chatToSend.chatID, sender=sendingUser, content=jData['cipher_text'])
+                    message = ChatLine.objects.create(chatID=chatToSend.chatID, sender=sendingUser, cipher_text=jData['cipher_text'])
 
                     try:
                         async_to_sync(
@@ -123,14 +123,14 @@ class ChatConsumer(WebsocketConsumer):
                             {
                                 'type': 'chat.send.message',
                                 'chatID': str(message.chatID),
-                                'cipher_text':str(message.content),
-                                'time': str(message.created_at),
-                                'created_at': str(message.created_at)
+                                'cipher_text':str(message.cipher_text),
+                                'time': str(message.time),
+                                'created_at': str(message.time)
                             }
                             )
                         print("Succesfully sent message to group")
                     except Exception as e:
-                        print(f"ERROR: {e}")
+                        print(f"ERROR1: {e}")
                     
                     try:
                         async_to_sync(
@@ -140,31 +140,62 @@ class ChatConsumer(WebsocketConsumer):
                                 'type': 'chat.confirm.message',
                                 'messageID':str(message.messageID),
                                 'chatID': str(message.chatID),
-                                'cipher_text':str(message.content),
-                                'time': str(message.created_at),
-                                'created_at': str(message.created_at) 
+                                'cipher_text':str(message.cipher_text),
+                                'time': str(message.time),
                             }
                             )
                     except Exception as e:
-                        print(f"ERROR: {e}")
+                        print(f"ERROR2: {e}")
+        elif jData["type"] == "latestMsgUpdate":
+            sendingUser = self.scope["user"].userID
+
+            if chat.objects.filter(chatID=jData["chatID"]).exists():
+                chatToSend = chat.objects.get(chatID=jData["chatID"])
+
+                if chatToSend.sender == sendingUser or chatToSend.receiver == sendingUser:
+
+                    targetGrp = f'user_{chatToSend.sender}'
+
+                    if chatToSend.sender == self.scope["user"].userID:
+                        targetGrp = f'user_{chatToSend.receiver}'
+
+                        
+                    try:
+                        async_to_sync(
+                            self.channel_layer.group_send)(
+                            targetGrp,
+                            {
+                                'type': 'chat.update.latest.message',
+                                'chatID': str(chatToSend.chatID),
+                                'cipher_text':str(jData["content"]), 
+                            }
+                            )
+                    except Exception as e:
+                        print(f"ERROR3: {e}")
             
     def chat_create(self, text_data):
         try:
             async_to_sync(self.send(text_data=json.dumps(text_data)))
             print("Chat updated on receiving user's end")
         except Exception as e:
-            print(f"ERROR: {e}")
+            print(f"ERROR4: {e}")
         
     def chat_send_message(self, text_data):
         try:
             async_to_sync(self.send(text_data=json.dumps(text_data)))
             print(f"Sent message to user {self.scope["user"].username}")
         except Exception as e:
-            print(f"ERROR: {e}")
+            print(f"ERROR5: {e}")
 
     def chat_confirm_message(self, text_data):
         try:
             async_to_sync(self.send(text_data=json.dumps(text_data)))
             print(f"Confirmed message to user {self.scope["user"].username}")
         except Exception as e:
-            print(f"ERROR: {e}")
+            print(f"ERROR6: {e}")
+    
+    def chat_update_latest_message(self, text_data):
+        try:
+            async_to_sync(self.send(text_data=json.dumps(text_data)))
+        except Exception as e:
+            print(f"ERROR7: {e}")

@@ -2,8 +2,7 @@ from src.models import User
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from api.serializers import *
-from api.models import friendRequest, chat
-from django.forms.models import model_to_dict
+from api.models import friendRequest, chat, ChatLine
 from django.core import serializers
 
 from secrets import token_bytes
@@ -136,4 +135,22 @@ def getChatDetails(request):
                     
                     return Response(jData, status=200)
     
+    return Response(status=403)
+
+@api_view(['GET'])
+def loadChatMessages(request):
+    serializer = getChatDetailsSerializer(data=request.query_params)
+
+    if serializer.is_valid():
+        if request.user.is_authenticated:
+            if serializer is not None:
+                validSer = serializer.validated_data
+                chatID = validSer["chatID"]
+                
+
+                if chat.objects.filter(chatID=chatID, sender=request.user.userID).exists() or chat.objects.filter(chatID=chatID, receiver=request.user.userID).exists():
+                    
+                    messagesReturned = ChatLine.objects.filter(chatID=chatID).order_by('time')
+                    messages = serializers.serialize('json', messagesReturned)
+                    return Response(messages, status=200)
     return Response(status=403)

@@ -7,4 +7,5 @@ urlpatterns = [
     path('api/acceptFR', views.acceptFR),
     path('api/rejectFR', views.rejectFR),
     path('api/getChatDetails', views.getChatDetails),
+    path('api/loadChatMessages', views.loadChatMessages),
 ]

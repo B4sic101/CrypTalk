@@ -164,7 +164,7 @@ chatSocket.onmessage = function(event) {
             chatObj.displayMessage(requestData, "receivedMsg");
         }
     }
-    else if (requestData.type == "chat.confirm.message"){
+    else if (requestData.type == "chat.confirm.message" || requestData.type == "chat.update.latest.message"){
         const chatObj = activeChats[requestData.chatID]
         if (chatObj !== undefined){
             chatObj.confirmMessageSent(requestData);
@@ -306,7 +306,7 @@ class Chat{
         this.#_cryptKey = chatData.cryptKey;
         this.#_iv = chatData.iv;
         this.#_msgBox = msgBox;
-        
+
         const dashboardContainer = document.querySelector(".dashboardContainer");
     
         dashboardContainer.appendChild(msgBox);
@@ -320,6 +320,32 @@ class Chat{
                 inputField.addEventListener("keydown", msgKeyPressed);
             }
         });
+        this.loadMessages();
+    }
+
+    loadMessages(){
+        let statusCode;
+        fetch(`/api/loadChatMessages?chatID=${this.#_chatID}`)
+        .then(data => {
+            statusCode = data.status;
+            return data.json();
+        })
+        .then(response => {
+            if (statusCode == 200){
+                const messages = JSON.parse(response);
+                const thisUserId = document.querySelector(".dashboardContainer .sidebar .reflectionProfile .details .userID").innerText;
+                messages.forEach((msgRaw) => {
+                    const msg = msgRaw.fields;
+
+                    if (msg.sender == thisUserId){
+                        this.displayMessage(msg, "confirmMsg");
+                    }
+                    else {
+                        this.displayMessage(msg, "receivedMsg");
+                    }
+                })
+            }
+        })
     }
 
     sendMessage(inputField){
@@ -338,11 +364,9 @@ class Chat{
             pendingMessages[chatID].push(cipherText);
         }
 
-        console.log(`cryptkey: ${cipherText.key}, iv: ${cipherText.iv}, ciphertext: ${cipherText.ciphertext}`);
 
         chatSocket.send(JSON.stringify({chatID:chatID, cipher_text:`${cipherText}`, type:"sendMsg"}));
 
-        console.log("Sent message");
     };
 
     confirmMessageSent(messageData){
@@ -365,9 +389,9 @@ class Chat{
 
         const chatBox = this.#_msgBox.querySelector(".chatBox");
 
-        console.log(messageData.time);
-        const time = (messageData.time).substr(11, 5);
-        console.log(time);
+        const rawTime = messageData.time;
+        console.log(rawTime);
+        const time = rawTime.substring(11, 16);
         const convertedTime = this.tConvert(time);
         // Check if this message's sender is the user or opposing user
         if (type == "confirmMsg"){
@@ -414,11 +438,20 @@ class Chat{
             chatBox.appendChild(messageBlock);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-
+        this.updateLatestMessage(userMessage);
     }
 
-    updateLatestMessage(messageData){
+    updateLatestMessage(userMsg){
+        let plainText = userMsg;
+        if (userMsg.length >= 15){
+            plainText = (userMsg.substring(0, 9)) + "...";
+        }
 
+        const latestMessage = CryptoJS.AES.encrypt(plainText, this.#_cryptKey, {iv: this.#_iv});
+        const latestMessageDiv = this.#_contactDIV.querySelector(".latestMessage");
+        latestMessageDiv.innerText = plainText;
+
+        chatSocket.send(JSON.stringify({chatID:(this.#_chatID).toString(), content:(latestMessage).toString(), type:"latestMsgUpdate"}));
     }
 
     tConvert (time) { // Code taken from stackoverflow answer
@@ -479,6 +512,8 @@ function chatSelected(){
 
         selectedChat = chatID;
         this.classList.add("active");
+        const chatBox = contactsMsgBox.querySelector(".chatBox");
+        chatBox.scrollTop = chatBox.scrollHeight;
         debug = true;
         // Add .selected class to the contact and display the relevant chat
     } else if (selectedChat == chatID){
@@ -491,6 +526,8 @@ function chatSelected(){
 
         selectedChat = "";
         this.classList.remove("active");
+        const chatBox = contactsMsgBox.querySelector(".chatBox");
+        chatBox.scrollTop = chatBox.scrollHeight;
         debug = true;
     } else if (selectedChat !== chatID) {
         // Switch selected chat
@@ -501,10 +538,14 @@ function chatSelected(){
 
         currentActiveChatMsgBox.style.display = "none";
         contactsMsgBox.style.display = "block";
-
+        
         currentActiveChatContact.classList.remove("active");
         selectedChat = chatID;
         this.classList.add("active");
+
+        const chatBox = contactsMsgBox.querySelector(".chatBox");
+        chatBox.scrollTop = chatBox.scrollHeight; // Make sure the view of the user is readjusted to the last message sent when they open the chat.
+
         debug = true;
     }
 }
