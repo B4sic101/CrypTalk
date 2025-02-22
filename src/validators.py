@@ -27,3 +27,4 @@ class authenticationValidators:
         if not search(r".*[\¬\!\"\£\$\%\^\&\*\(\)\_\+\`\-\=\{\}\:\@\~\<\>\?\[\]\;\'\#\,\.\/\\\|]", password):
 
             return "Password must have at least one special character"
+        return None

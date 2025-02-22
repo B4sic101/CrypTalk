@@ -146,32 +146,6 @@ class ChatConsumer(WebsocketConsumer):
                             )
                     except Exception as e:
                         print(f"ERROR2: {e}")
-        elif jData["type"] == "latestMsgUpdate":
-            sendingUser = self.scope["user"].userID
-
-            if chat.objects.filter(chatID=jData["chatID"]).exists():
-                chatToSend = chat.objects.get(chatID=jData["chatID"])
-
-                if chatToSend.sender == sendingUser or chatToSend.receiver == sendingUser:
-
-                    targetGrp = f'user_{chatToSend.sender}'
-
-                    if chatToSend.sender == self.scope["user"].userID:
-                        targetGrp = f'user_{chatToSend.receiver}'
-
-                        
-                    try:
-                        async_to_sync(
-                            self.channel_layer.group_send)(
-                            targetGrp,
-                            {
-                                'type': 'chat.update.latest.message',
-                                'chatID': str(chatToSend.chatID),
-                                'cipher_text':str(jData["content"]), 
-                            }
-                            )
-                    except Exception as e:
-                        print(f"ERROR3: {e}")
             
     def chat_create(self, text_data):
         try:

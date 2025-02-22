@@ -42,6 +42,12 @@ form {
     width: 36vh;
 }
 
+.errorMsg {
+    color: rgb(237, 53, 53);
+    margin-left: 1vh;
+    margin-bottom: .5vh;
+}
+
 .fa-regular {
     display: flex;
     background: #181818;

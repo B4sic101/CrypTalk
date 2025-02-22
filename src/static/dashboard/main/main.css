@@ -44,6 +44,10 @@
     overflow: hidden;
 }
 
+.reflectionProfile .profileConfigs .settingsBtn { 
+    display: none;
+}
+
 .profileUsername{
     display: flex;
     font-size: 2vh;
@@ -68,11 +72,12 @@
     display: flex;
     flex-direction: row;
     top: 4vh;
-    right: 4.8vh;
+    right: 1.5vh;
     position: relative;
     gap: 1vh;
     flex-shrink: 0;
 }
+
 
 .profileBtn {
     display: relative;
@@ -81,6 +86,10 @@
     background: none;
     cursor: pointer;
     color: white;
+}
+
+.profileBtn:active {
+    transform: scale(0.85);
 }
 
 /* Contacts List*/

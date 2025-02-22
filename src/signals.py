@@ -17,7 +17,7 @@ def createDummyProfile(sender, instance, created, **kwargs):
         instance.profileImage = imageGen(f"user_{userID}.jpeg")
         instance.save()
 
-def imageGen(fileName):
+def imageGen(fileName): # ai generated
     img = Image.new('RGB', (300, 300), color=(255, 255, 255))
 
     buffer = BytesIO()

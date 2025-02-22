@@ -59,8 +59,12 @@ function msgKeyPressed(event){
         const msgBox = this.parentElement.parentElement;
         const chatID = msgBox.querySelector(".details .chatID").innerText;
         const chatObj = activeChats[chatID];
-        
-        if (chatObj !== undefined){
+        const inputField = chatObj.msgBox.querySelector(".entryField");
+        const msg = inputField.value;
+        const noWhitespace = msg.replace(/\s+/g, '')
+
+
+        if (chatObj !== undefined && noWhitespace !== ""){
             chatObj.sendMessage(this);
         }
     };
@@ -164,7 +168,7 @@ chatSocket.onmessage = function(event) {
             chatObj.displayMessage(requestData, "receivedMsg");
         }
     }
-    else if (requestData.type == "chat.confirm.message" || requestData.type == "chat.update.latest.message"){
+    else if (requestData.type == "chat.confirm.message"){
         const chatObj = activeChats[requestData.chatID]
         if (chatObj !== undefined){
             chatObj.confirmMessageSent(requestData);
@@ -390,7 +394,6 @@ class Chat{
         const chatBox = this.#_msgBox.querySelector(".chatBox");
 
         const rawTime = messageData.time;
-        console.log(rawTime);
         const time = rawTime.substring(11, 16);
         const convertedTime = this.tConvert(time);
         // Check if this message's sender is the user or opposing user
@@ -447,11 +450,8 @@ class Chat{
             plainText = (userMsg.substring(0, 9)) + "...";
         }
 
-        const latestMessage = CryptoJS.AES.encrypt(plainText, this.#_cryptKey, {iv: this.#_iv});
         const latestMessageDiv = this.#_contactDIV.querySelector(".latestMessage");
         latestMessageDiv.innerText = plainText;
-
-        chatSocket.send(JSON.stringify({chatID:(this.#_chatID).toString(), content:(latestMessage).toString(), type:"latestMsgUpdate"}));
     }
 
     tConvert (time) { // Code taken from stackoverflow answer
@@ -466,7 +466,7 @@ class Chat{
       }
 
     get username() {
-        return this.#_username;
+        return `MOD_${this.#_username}`;
     }
 
     get chatID() {

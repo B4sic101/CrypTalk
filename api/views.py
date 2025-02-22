@@ -24,7 +24,7 @@ def addContact(request):
 
                     if not friendRequest.objects.filter(receiver=validSer['receiver'], sender=request.user.userID).exists():
                         if not friendRequest.objects.filter(receiver=request.user.userID, sender=validSer['receiver']).exists():
-                            if not chat.objects.filter(sender=request.user.userID).exists():
+                            if not chat.objects.filter(sender=request.user.userID).exists() and not chat.objects.filter(receiver=request.user.userID).exists():
                                 newFR = friendRequest.objects.create(receiver=validSer['receiver'], sender=request.user.userID)
 
                                 print("data: " + str(newFR))
