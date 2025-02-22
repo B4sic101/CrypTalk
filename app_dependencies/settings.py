@@ -13,6 +13,8 @@ from os import environ
 from os.path import join
 from pathlib import Path
 from dotenv import load_dotenv
+from socket import gethostbyname
+from socket import gethostname
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,12 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0o@m_z611qnri@t*+ob#fr)++bn+4)h9^evg0e46)o(dyzr4_@'
+SECRET_KEY = 'django-insecure-=wld_vsm4@qrw_79pliupbquq+lvs7dkxy)g()k=@a+n+72#(&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+load_dotenv()
+ALLOWED_HOSTS = environ.get("ALLOWED_HOST").split(",")
+ALLOWED_HOSTS.append(gethostbyname(gethostname()))
 
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = join(BASE_DIR, 'uploads')
@@ -96,7 +100,7 @@ LOGIN_URL = '/login'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'newdb',
+        'NAME': 'cryptalkdb',
         'USER': 'root',
         'PASSWORD': 'default',
         'HOST': 'localhost',
@@ -147,7 +151,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+
+STATIC_URL = '/static/'
+STATIC_ROOT = '/root/CrypTalk/src/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -157,7 +163,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "src.User"
 
 #SMTP Configuration
-load_dotenv()
+
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
