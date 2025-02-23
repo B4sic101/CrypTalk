@@ -28,11 +28,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6#%5v$76+c6lr8uy%@jnnr61jzjxbl*jpwm%6_=zc9-ky5v4l9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 load_dotenv()
-ALLOWED_HOSTS = environ.get("ALLOWED_HOST").split(",")
-ALLOWED_HOSTS.append(gethostbyname(gethostname()))
+
+ALLOWED_HOSTS = []
 
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = join(BASE_DIR, 'uploads')
