@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=wld_vsm4@qrw_79pliupbquq+lvs7dkxy)g()k=@a+n+72#(&'
+SECRET_KEY = 'django-insecure-6#%5v$76+c6lr8uy%@jnnr61jzjxbl*jpwm%6_=zc9-ky5v4l9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -153,7 +153,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/root/CrypTalk/src/static/'
+STATIC_ROOT = '/var/www/cryptalk_static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
