@@ -1,7 +1,12 @@
 # CrypTalk
 ## Usage
-Install python-venv package in Linux and run:
+Run on Debain Distro:
 ```shell
 ./setup.sh
 ```
-Change or adapt to the SMTP configuration in [settings.py](/app_dependencies/settings.py).
+Change or adapt to the SMTP configuration via creating a *.env* file in app_dependencies entering the following:
+```
+cryptalkEmail={full_email_address}
+cryptalkAppPassword={email_password}
+ALLOWED_HOST=127.0.0.1
+```
